@@ -1,0 +1,216 @@
+{
+    "iptables": [], 
+    "interfaces": {
+        "port8": {
+            "MACADDR": "fa:ac:a6:10:55:07", 
+            "UUID": "0eeda695-63d0-4d08-9770-b198cc3eef57", 
+            "NM_CONTROLLED": "yes", 
+            "BOOTPROTO": "none", 
+            "DEVICE": "port8", 
+            "TYPE": "Ethernet", 
+            "ONBOOT": "no"
+        }, 
+        "port6": {
+            "MACADDR": "fa:ac:a6:10:55:05", 
+            "UUID": "c0fd5121-f503-4dc6-a1b1-3047f6490a72", 
+            "NM_CONTROLLED": "yes", 
+            "BOOTPROTO": "none", 
+            "DEVICE": "port6", 
+            "TYPE": "Ethernet", 
+            "ONBOOT": "no"
+        }, 
+        "port7": {
+            "MACADDR": "fa:ac:a6:10:55:06", 
+            "UUID": "6a1dbf87-13f7-4840-8f0b-c0b997c63947", 
+            "NM_CONTROLLED": "yes", 
+            "BOOTPROTO": "none", 
+            "DEVICE": "port7", 
+            "TYPE": "Ethernet", 
+            "ONBOOT": "no"
+        }, 
+        "port4": {
+            "MACADDR": "fa:ac:a6:10:55:03", 
+            "UUID": "8b6bba8a-9e5b-4462-b806-d1c7e84132b9", 
+            "NM_CONTROLLED": "yes", 
+            "BOOTPROTO": "none", 
+            "DEVICE": "port4", 
+            "TYPE": "Ethernet", 
+            "ONBOOT": "no"
+        }, 
+        "port5": {
+            "MACADDR": "fa:ac:a6:10:55:04", 
+            "UUID": "0f990db4-2255-435c-8e3a-0f711df66769", 
+            "NM_CONTROLLED": "yes", 
+            "BOOTPROTO": "none", 
+            "DEVICE": "port5", 
+            "TYPE": "Ethernet", 
+            "ONBOOT": "no"
+        }, 
+        "eth1": {
+            "MACADDR": "fa:ac:a6:10:55:01", 
+            "UUID": "9687611b-8b34-4e28-84cb-2a8f0300ec58", 
+            "NM_CONTROLLED": "yes", 
+            "BOOTPROTO": "none", 
+            "DEVICE": "eth1", 
+            "TYPE": "Ethernet", 
+            "ONBOOT": "no"
+        }, 
+        "port3": {
+            "MACADDR": "fa:ac:a6:10:55:02", 
+            "UUID": "8c589f39-bfef-42c0-9778-f6aa37419cf2", 
+            "NM_CONTROLLED": "yes", 
+            "BOOTPROTO": "none", 
+            "DEVICE": "port3", 
+            "TYPE": "Ethernet", 
+            "ONBOOT": "no"
+        }, 
+        "eth0": {
+            "alias": "ppp0", 
+            "MACADDR": "fa:ac:a6:10:55:00", 
+            "DEVICE": "eth0", 
+            "IPV6INIT": "yes", 
+            "IPV6_ROUTE_METRIC": 100, 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "pppoeConfig": {
+                "USER": "mk", 
+                "PASS": "mk"
+            }, 
+            "METRIC": 100, 
+            "UUID": "912712a8-659b-48aa-b1e2-703fabe6c27e", 
+            "NM_CONTROLLED": "yes", 
+            "IPV4_ROUTE_METRIC": 100, 
+            "static": false, 
+            "PORT_TYPE": "Network", 
+            "ipv6": true, 
+            "IPV6_AUTOCONF": "yes", 
+            "IPV6_FAILURE_FATAL": "no", 
+            "DHCPV6C": "yes", 
+            "TYPE": "Ethernet", 
+            "ONBOOT": "yes", 
+            "BOOTPROTO": "dhcp", 
+            "isPPPoEEnabled": "yes"
+        }
+    }, 
+    "rest": {
+        "hostname": "util-1.mvdcdev37.us.alcatel-lucent.com", 
+        "configUrl": [
+            "https:", 
+            "", 
+            "util-1.mvdcdev37.us.alcatel-lucent.com:11443", 
+            "nuage", 
+            "api", 
+            "v5_0", 
+            "nsgateways", 
+            "1fcb9841-1d71-434e-9a66-9e64bcbcbd56", 
+            "infraconfig"
+        ], 
+        "port": "11443", 
+        "restroot": "/nuage/api/v5_0/nsgateways/1fcb9841-1d71-434e-9a66-9e64bcbcbd56/infraconfig"
+    }, 
+    "tpm": {
+        "srk": "4dbc88aa1015483ef9edae56e5d324596c034a4c", 
+        "tpmOwner": "4dbc88aa1015483ef9edae56e5d324596c034a4c"
+    }, 
+    "cert": "\r\nSubject: UID=ovs-1@test_organization,CN=ovs-1,O=test_organization\r\nIssuer: CN=VSPCA\r\n-----BEGIN CERTIFICATE-----\r\nMIIEajCCA1KgAwIBAgIIApgfW+srQEEwDQYJKoZIhvcNAQELBQAwEDEOMAwGA1UE\r\nAwwFVlNQQ0EwHhcNMTgwNzA3MTQwNTU5WhcNMjAwNzA2MTQwNTU5WjBVMScwJQYK\r\nCZImiZPyLGQBAQwXb3ZzLTFAdGVzdF9vcmdhbml6YXRpb24xDjAMBgNVBAMMBW92\r\ncy0xMRowGAYDVQQKDBF0ZXN0X29yZ2FuaXphdGlvbjCCASIwDQYJKoZIhvcNAQEB\r\nBQADggEPADCCAQoCggEBALqNTxC0Tr9cJ7qc+UjHwMvE9GphIX4VSQgHU91pDbs4\r\npN0/0N8fgjHl7Dco+NtgWsQetyXmKKx4A5x29P8Qh7PWGAr1puN/ET5f1Ccxckvt\r\npXn6SMqaSEE+v7P5DtFblphZ+va9Wgqpl3/nA9vuFoPmVBZZ1KFy3bxO1SC2IGw/\r\nRagmalNjUDDaZeRPtZoU5wEmTTBVY+Mo5T9eQrdsJuryCFrqAUOVd1MMgAeJV/N/\r\nJ9xPBGzTcDDxTUlKf9BXpjL4hATl1VFDIe+SFfSth4K9BboDOs/SWRHFJEDizQeS\r\nhuMwLvGjwBRWiSn91E6+0fIunYgwUaoMVG59AHu8j00CAwEAAaOCAYEwggF9MAwG\r\nA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUvEJ2zMA4aUdiD2Le4USjLc2bYscwaAYI\r\nKwYBBQUHAQEEXDBaMFgGCCsGAQUFBzABhkxodHRwOi8veG1wcC5tdmRjZGV2Mzcu\r\ndXMuYWxjYXRlbC1sdWNlbnQuY29tOjcwODAvZWpiY2EvcHVibGljd2ViL3N0YXR1\r\ncy9vY3NwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDCBkwYDVR0fBIGL\r\nMIGIMIGFoG2ga4ZpaHR0cDovL3htcHAubXZkY2RldjM3LnVzLmFsY2F0ZWwtbHVj\r\nZW50LmNvbTo3MDgwL2VqYmNhL3B1YmxpY3dlYi93ZWJkaXN0L2NlcnRkaXN0P2Nt\r\nZD1jcmwmaXNzdWVyPUNOPVZTUENBohSkEjAQMQ4wDAYDVQQDDAVWU1BDQTAdBgNV\r\nHQ4EFgQUOOSIptSRBDGNfmW2hQOsLfZnBA4wDgYDVR0PAQH/BAQDAgXgMA0GCSqG\r\nSIb3DQEBCwUAA4IBAQB/9yLJkCtSevSn9WzjJ2XkbjWn2Cys4wMNbdvYGCNZhZwx\r\noRxBplfJ7/VE95aJlQdm4nqcymZ7qTxtizssgDLFGQ8djY8Zokytqe52R7Inu0pV\r\n+snQrNH6/Xx8YzqDA2yRwr+hGqjBCsdfHZhsBHZbWVSypK2M0jwBnzEghw5ECNOU\r\naWpP9HfgafLsRAqjNw0zUUnrlPiWN6kQssjXpbWPoHcAl6zS5MbTaoSq8QdF8bsu\r\nL+Xy5kOPz97AElkuK5Dd1lJTZcYNdcQ7d4zk2+glZPC2vc57+u78zb/CR1WcpeWm\r\nLXhjaJbrrPLO/ENpI3VVEyEvpkp8sBHGsL9ONc4r\r\n-----END CERTIFICATE-----", 
+    "interfaceList": [
+        "eth0", 
+        "eth1", 
+        "port3", 
+        "port4", 
+        "port5", 
+        "port6", 
+        "port7", 
+        "port8"
+    ], 
+    "cacert": "\r\nSubject: CN=VSPCA\r\nIssuer: CN=VSPCA\r\n-----BEGIN CERTIFICATE-----\r\nMIIDGDCCAgCgAwIBAgIIK9O63h3JlhEwDQYJKoZIhvcNAQELBQAwEDEOMAwGA1UE\r\nAwwFVlNQQ0EwHhcNMTgwNzA3MTMyMDMyWhcNMjgwNzA0MTMyMDMyWjAQMQ4wDAYD\r\nVQQDDAVWU1BDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAIDsYDc8\r\n9vuwc/peziLkPmdu7RgjitgEvCnSUzXCA2W6fsjzIohc/0Y9mRM59YdjVXvVQvPg\r\ngtgfmUyjTHz/awjm89yLw79/6tgVjZD0kgcGThXbSr8BSlGvGpwy8TcfyIlF5XPP\r\nwtloiNutHZfM854nudz579Q62CiNvd8OMArPPHi8pkUjcenCyiVsBwDMLi2yhcMq\r\neZv/vfksrr4Wr4hUYy34HLYVHJiqxr1FdCqJiQfUnUkI/saLXBG9Eo7HiKgHPny/\r\ntv4YIkcCTD4azf+JjV/nExZ7yTjsTVB7sIe8RALQsvQCWctMOUxtGEiSfnsT6EDZ\r\n6E3ifGJXDGIlffsCAwEAAaN2MHQwDwYDVR0TAQH/BAUwAwEB/zAfBgNVHSMEGDAW\r\ngBS8QnbMwDhpR2IPYt7hRKMtzZtixzARBgNVHSAECjAIMAYGBFUdIAAwHQYDVR0O\r\nBBYEFLxCdszAOGlHYg9i3uFEoy3Nm2LHMA4GA1UdDwEB/wQEAwIBhjANBgkqhkiG\r\n9w0BAQsFAAOCAQEAWn4C0VxSiIqgAyKPE/Jwy1hCqrg+lttWOUbLtGZTW6URN+fd\r\nLfUpsAkCwhiVa4nmJginw14ftLHneNHYPmvghEN8xc6TXFn7LiECa+dBa/HT8mZv\r\nWINP+1swm4/DbdzUL8QUFvB0APgx4Rq37yzaYn+sTw5F+3WSn7Gaeke4whn2QHDc\r\nFD/4Qt+YTlfI3cFbxnN/Xhdqu6HnbUZACrYXV9r/x6ah9T+YkFaweY+WI1K2iK/Q\r\no6zVIfQ7B72bedzzd6kj8rzIs0tm/aLIyWPcSeDrFyu2BZFY2Uo/D37ho3BvvY7c\r\nyv4LldEiPKQDrW53myL+1cpiFAiUoZ081N+rkQ==\r\n-----END CERTIFICATE-----", 
+    "key": "\r\n-----BEGIN PRIVATE KEY-----\r\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC6jU8QtE6/XCe6\r\nnPlIx8DLxPRqYSF+FUkIB1PdaQ27OKTdP9DfH4Ix5ew3KPjbYFrEHrcl5iiseAOc\r\ndvT/EIez1hgK9abjfxE+X9QnMXJL7aV5+kjKmkhBPr+z+Q7RW5aYWfr2vVoKqZd/\r\n5wPb7haD5lQWWdShct28TtUgtiBsP0WoJmpTY1Aw2mXkT7WaFOcBJk0wVWPjKOU/\r\nXkK3bCbq8gha6gFDlXdTDIAHiVfzfyfcTwRs03Aw8U1JSn/QV6Yy+IQE5dVRQyHv\r\nkhX0rYeCvQW6AzrP0lkRxSRA4s0HkobjMC7xo8AUVokp/dROvtHyLp2IMFGqDFRu\r\nfQB7vI9NAgMBAAECggEASEAOTSPoE8j3QhklmwByNPk0yDaSKCjKPifIXUognVAU\r\n2fOrS58CZ5zq3Xoq15v7y1UyDaWUPyfEDkcsH9UhGY9jhGsblaRS41tt6TgHUkzZ\r\n9+HtazpRnaNVz7g3+vGD48GFpyYyx0pjeI/aOMV/Rtpf2sAzz8uTASlu9dpTuFgm\r\n2EdA5THP2vzH2eI4abe6/KcB2pGLmLEMTShzFMW3FXSkkIOTc+EGasJ3x1wJUi+A\r\n66Xey5A3Wuol7V3gGQD2pFNtdiFdN9L9j6OH/Np1/ahoSv7RQifVIDrt6LaeX3iK\r\nccKS0tgvs3/Rp9u2THZLu/58evf3gmVVTQquVMWVAQKBgQDxwrrZBF1DYNGLG/He\r\nirU3fZXITtqtKvmLpD83ZaPIXh8XVoAyZ1x4Azeuqyh4RhA5Mpxh9peqc/CPF2CR\r\nziyCyw20u/9tmEfGKVCHZfLUJ8EPs+KCk4OaofX/373MbGiN3rCXIUYJ2neH+eka\r\nv8hRZpKpfDcLR5+wimlC3QZYoQKBgQDFiiRUSNgMPWEeK31tFAMHj1MhmX4KWWlV\r\nd/l2N7FLVbKBS1X6wnA0WHngxhm9vw4d5MC1xZ6Qg4Syvgdn9UnIZeY7nJWahfcg\r\n7VFa6fYy5nz67oQAqaCrMTcvzOBtc701FgmfYlvzjSpLUoVC94HYxhW+5k764LtF\r\n2Kj6UoYbLQKBgEG31IDfrdZ+ABgXfZUoEYDHE6tCvDDsiK9L859EctQpubvnWKva\r\n6wj4nu9NOZAQQ6K4vkfm921vXMoY6bhY2kKnnc8ud428Im6clnZn4S2IrPNuy7kB\r\nDno/YpaupHJoWbeO/GPouJg/GdUNuy75SSPPhTirOm9HhgJAbcKuQGZhAoGBAIQu\r\nLKMNXyvJgovalAICKwjK+dh4yeMI8zfSoOVe3M7JGDn1/CFgLA6KyXsDc8QI7NxJ\r\n7j1zb+fJaWjlSTVh564lqUpoO577V2L8Cb0o4qoqmqSaJ0/+MVl8BC6DDAWRNaEp\r\nDuVMvrSY2B0wqaUm0wcHfRORLnYnHIjfMirWP5A9AoGBALGyuAWKXKu6DRG5LJHz\r\n1cLFWDrL8bjj6k4EfarrsMDkMYPHJmbMeElDQzRp6ZOANW0ZLGYyNhtnhV2hIk0e\r\nlChhi2OJQSXgv58mQ7TET6+SvysH72JCfyp4lTmpAdlihdiwYDcRn3vU5fdIWdKE\r\nyKPCoogZjRo2r27Sy2FRJLDi\r\n-----END PRIVATE KEY-----", 
+    "services": [], 
+    "agent-config": {
+        "hash": "", 
+        "sslcert": "/etc/default/bootstrap/keys/cert.pem", 
+        "sslkey": "/etc/default/bootstrap/keys/key.pem", 
+        "configURL": "https://util-1.mvdcdev37.us.alcatel-lucent.com:11443/nuage/api/v5_0/nsgateways/1fcb9841-1d71-434e-9a66-9e64bcbcbd56/infraconfig", 
+        "sslcacert": "/etc/default/bootstrap/keys/cacert.pem", 
+        "data": {
+            "proxyDNSName": "util-1.mvdcdev37.us.alcatel-lucent.com", 
+            "bootstrap": {
+                "status": "INACTIVE", 
+                "id": "5925c2eb-4a3b-427f-8fd9-ecb02b9ad643"
+            }, 
+            "results": {
+                "INET_DEFINITION": {
+                    "result": "PASS", 
+                    "uplink1": {
+                        "message": "SUCCESS - WAN ppp0 IP configured to 10.15.1.254/255.255.255.255", 
+                        "result": "PASS", 
+                        "inet": {
+                            "peer": "10.15.1.2", 
+                            "netmask": "255.255.255.255", 
+                            "addr": "10.15.1.254"
+                        }
+                    }
+                }, 
+                "PROXY_DNS_RESOLUTION": {
+                    "message": "SUCCESS - Proxy 'util-1.mvdcdev37.us.alcatel-lucent.com' resolves to 10.10.16.1", 
+                    "proxyIP": "10.10.16.1", 
+                    "result": "PASS"
+                }
+            }, 
+            "url": "https://proxy-bootstrap:12443/nuage/api/v5_0/nsgateways/1fcb9841-1d71-434e-9a66-9e64bcbcbd56/bootstrapactivations", 
+            "location": {
+                "country": null, 
+                "state": null, 
+                "locality": null, 
+                "id": "5fc0e09f-5df5-4e20-af09-340a6caa11e0", 
+                "address": null
+            }, 
+            "installer": {
+                "lastName": "Bonbeur", 
+                "email": "jean@bonbeur.net", 
+                "id": "1e83ac5f-bbb5-4c14-bb6d-5f7780c3a783", 
+                "firstName": "Jean", 
+                "mobileNumber": "+15102132030"
+            }, 
+            "gateway": {
+                "tpmOwner": "", 
+                "subjectDN": "UID=ovs-1@test_organization,CN=ovs-1,O=test_organization", 
+                "uplinks": [
+                    {
+                        "v4": {
+                            "installermanaged": false, 
+                            "mode": "pppoe", 
+                            "pppoe": {
+                                "user": "mk", 
+                                "pass": "mk"
+                            }
+                        }, 
+                        "name": "eth0"
+                    }
+                ], 
+                "srk": "", 
+                "description": "ovs-1", 
+                "enterpriseID": "4088a805-1623-4ac9-b8dd-dcbe504589c6", 
+                "systemID": "149.82.224.238", 
+                "enterprise": "test_organization", 
+                "personality": "NSG", 
+                "id": "1fcb9841-1d71-434e-9a66-9e64bcbcbd56", 
+                "name": "ovs-1"
+            }
+        }
+    }, 
+    "gateway": {
+        "uplinks": [
+            {
+                "v4": {
+                    "installermanaged": false, 
+                    "mode": "pppoe", 
+                    "pppoe": {
+                        "user": "mk", 
+                        "pass": "mk"
+                    }
+                }, 
+                "name": "eth0"
+            }
+        ]
+    }
+}

@@ -1,0 +1,309 @@
+#!/usr/bin/python
+
+import sys
+import os
+import time
+import json
+import subprocess
+import re
+from pprint import pprint
+from ns_setup import get_macs, get_uuids, init
+
+add_flow="ovs-ofctl add-flow alubr0 "
+vrfs = {}
+evpns = {}
+vms = {}
+bridge_ports = {}
+logfile = '/var/tmp/setup.log'
+
+def exe(cmd):
+    print cmd
+    #with open(logfile, 'w+') as f:
+    #     proc = subprocess.Popen(cmd, shell=True, stdout=f)
+    #proc.wait()
+    #if proc.returncode != 0:
+    #   print("\t" + cmd)
+    #   print("\treturn code: %s" % str(proc.returncode))
+       #sys.exit(1)
+    #os.system(cmd + ' >/dev/null 2>&1')
+    os.system(cmd)
+
+def ovs_restart():
+    os.system("echo "" > /var/log/openvswitch/ovs-vswitchd.log")
+    #os.system("/usr/share/openvswitch/scripts/openvswitch.init restart")
+    os.system("service openvswitch restart")
+    exe("ovs-appctl vlog/disable-rate-limit")
+    exe("ovs-appctl vlog/set any:file:info")
+    exe("ovs-appctl vlog/set vrs_ofproto:file:dbg")
+    exe("ovs-appctl vlog/set vrs_ofproto_vrf:file:dbg")
+    exe("ovs-appctl vlog/set vrs_ofproto_evpn:file:dbg")
+    exe("ovs-appctl vlog/set vrs_ofproto_dpif:file:dbg")
+    #print "----------------------------"
+    print "ovs restart done."
+    #print "----------------------------"
+
+def vm_add_port(vm):
+    exe("ovs-vsctl add-port alubr0 "+vm['name'])
+
+def ns_vm_dhcp():
+    for vm in vms:
+        if vm.get('isfake') == "False":
+          continue
+        token = vm["interface"].split("-")
+        peer = token[0] +"-veth0"
+        print ("Peer Interface of %s => %s" % (vm["interface"], peer))
+        exe("ip netns exec "+token[0]+" dhclient -v -r "+peer)
+        exe("ip netns exec "+token[0]+" dhclient -v "+peer)
+        print ("ipv6 addre config: "+peer)
+        exe('ip netns exec '+token[0]+' ip -6 addr del '+vm['ipv6']+'/64 dev '+peer)
+        exe('ip netns exec '+token[0]+' ip -6 route del '+vm['ipv6']+' dev '+peer)
+        exe('ip netns exec '+token[0]+' ip -6 route del default via '+vm['gw_ipv6'])
+
+        exe('ip netns exec '+token[0]+' ip -6 addr add '+vm['ipv6']+'/64 dev '+peer)
+        exe('ip netns exec '+token[0]+' ip -6 route add '+vm['ipv6']+' dev '+peer)
+        exe('ip netns exec '+token[0]+' ip -6 route add default via '+vm['gw_ipv6'])
+
+def vm_start(vm):
+    if vm.get('isfake') == "False":
+       exe("virsh destroy "+vm['name'])
+    exe("virsh undefine "+vm['name'])
+    exe("virsh define  /var/tmp/"+vm['name']+".xml")
+    if vm.get('isfake') == "False":
+       exe("virsh start "+vm['name']);
+    #print "----------------------------"
+    print "VM "+vm['name']+ " started .."
+    #print "----------------------------"
+
+def add_vrf(vrf, tnl_id):
+    exe("ovs-ofctl add-vrf alubr0 "+str(vrf)+" "+str(tnl_id))
+    #print "----------------------------"
+    print "vrf "+str(vrf)+" Created .."
+    #print "----------------------------"
+
+def add_evpn(evpn, vrf, flags, tnl_id, subnet, mask, gw_ip, gw_mac, v6_subnet, v6_mask, v6_gw, dhcp_pool_range):
+    flags_str = ""
+    for f in flags.split(','):
+        flags_str = flags_str + "flags="+f+","
+    exe("ovs-ofctl add-evpn alubr0 "+str(vrf)+" evpn_id="+str(evpn)+",vni_id="+str(tnl_id)+\
+        ","+flags_str+"subnet="+subnet+",mask="+mask+",gw_ip="+gw_ip+",gw_mac="+gw_mac+",subnetv6="+v6_subnet+\
+        ",gw_ipv6="+v6_gw+",maskv6="+v6_mask+",dhcp_pool_range="+dhcp_pool_range)
+    #print "----------------------------"
+    print "evpn "+str(evpn)+" Created .."
+    #print "----------------------------"
+
+def vm_evpn_membership(interface, evpn, vm_uuid, port_type = "vm"):
+    exe(add_flow + "flow_type=route,type="+port_type+",ip,flags=membership,evpn_id="+str(evpn)+\
+        ",interface="+str(interface)+",vm_uuid="+vm_uuid)
+    #print "----------------------------"
+    print "Associated "+interface+ " with evpn "+str(evpn)
+    #print "----------------------------"
+
+def vm_acl(interface, evpn, vm_uuid, port_type = "vm"):
+    acls = ["pre", "post", "redirect" ]
+    for acl in acls:
+        exe(add_flow + "flow_type=acl,type="+port_type+",priority=0,flags="+acl+",interface="+interface+",vm_uuid="+vm_uuid+",action=allow")
+        #print "----------------------------"
+        print "Configured "+acl+" ACL "+interface
+        #print "----------------------------"
+
+def vm_dhcp_info(interface, evpn, vm_uuid, proto, vm_ip):
+    exe(add_flow + "flow_type=dhcp,interface="+interface+",vm_uuid="+vm_uuid+","+proto+"="+vm_ip)
+    #print "----------------------------"
+    print "Associated "+interface+ " with dhcp entry "+vm_ip
+    #print "----------------------------"
+
+def vm_fips(interface, uuid, vm_ip, fip, pub_vrf, port_type = "vm"):
+    exe(add_flow + "flow_type=route,type="+port_type+",ip,flags=nat,vrf_id=0x1,interface="+interface+\
+        ",vm_uuid="+uuid+",nw_dst="+vm_ip+",public_ip="+fip+",pub_vrfid="+str(pub_vrf))
+    #print "----------------------------"
+    print "Associated "+interface+ " with fip "+ fip
+    #print "----------------------------"
+
+def vm_enable_mac_learning(vm, port_type = "vm"):
+    exe(add_flow + "flow_type=route,type="+port_type+",flags=enable-learning,interface="+vm['interface']+",vm_uuid="+vm['uuid'])
+
+def vm_routes(vm, proto, vrf, evpn, interface, vm_uuid, vm_ip, vm_mac, port_type = "vm"):
+    dst = ('nw_dst' if proto == 'ip' else 'ipv6_dst')
+    exe(add_flow + "flow_type=route,type="+port_type+",flags=evpn,vrf_id="+str(vrf)+",evpn_id="+str(evpn)+",interface="+str(interface)+\
+        ",vm_uuid="+vm_uuid+",dl_dst="+vm_mac)
+    exe(add_flow + "flow_type=route,type="+port_type+","+proto+",flags=evpn-redirect,vrf_id="+str(vrf)+",evpn_id="+str(evpn)+","+dst+"="+str(vm_ip))
+    exe(add_flow+ "flow_type=qos,interface="+str(interface)+",type="+port_type+","\
+        "vm_uuid="+vm_uuid+","\
+        "ingress_rate="+str(vm['ingress_rate'])+",ingress_peak_rate="+str(vm['ingress_peak_rate'])+",ingress_burst="+str(vm['ingress_burst'])+","\
+        "ingress_bum_rate="+str(vm['ingress_bum_rate'])+",ingress_bum_peak_rate="+str(vm['ingress_bum_peak_rate'])+",ingress_bum_burst="+str(vm['ingress_bum_burst'])+","\
+        "ingress_fip_rate="+str(vm['ingress_fip_rate'])+",ingress_fip_peak_rate="+str(vm['ingress_fip_peak_rate'])+",ingress_fip_burst="+str(vm['ingress_fip_burst'])+","\
+        "egress_fip_rate="+str(vm['egress_fip_rate'])+",egress_fip_peak_rate="+str(vm['egress_fip_peak_rate'])+",egress_fip_burst="+str(vm['egress_fip_burst'])+","\
+        "egress_class="+str(vm['egress_class']))
+    exe(add_flow + "flow_type=route,type="+port_type+",flags=arp-route,"+proto+",vrf_id="+str(vrf)+\
+        ",evpn_id="+str(evpn)+","+dst+"="+vm_ip+",dl_dst="+vm_mac)
+    exe(add_flow + "flow_type=route,type="+port_type+",flags=evpn,vrf_id="+str(vrf)+",evpn_id="+str(evpn)+",interface="+str(interface)+\
+        ",vm_uuid="+vm_uuid+",dl_dst="+vm_mac)
+    #print "----------------------------"
+    print "vm routes added for "+interface+" ip: "+vm_ip
+    #print "----------------------------"
+
+def ofctlby_property(base, values):
+    for v in values:
+        cmd = ""
+        for p in v['properties']:
+            #print p +" -> "+str(v['properties'][p])
+            if str(v['properties'][p]).find(',') != -1:
+               attr_str = ""
+               for f in str(v['properties'][p]).split(','):
+                   attr_str = attr_str + p +"="+f+","
+               cmd = cmd +attr_str+","
+            else:
+               cmd = cmd +p+"="+str(v['properties'][p])+","
+        if v.get('vrf', 'none') != 'none':
+            cmd = str(v['vrf'])+" "+cmd
+        exe(base +" "+ cmd)
+
+def bridge_port_setup():
+    for vrf in vrfs:
+        add_vrf(vrf['id'], vrf['tnl_id'])
+    ofctlby_property('ovs-ofctl add-evpn alubr0', evpns)
+    for p in bridge_ports:
+        exe("nuage-sw-gwcli.pl --add --name "+p['interface']\
+            +" --type bridge  --vlan 0 --interface "+p['interface']\
+            +" --uuid "+p['uuid'])
+        vm_evpn_membership(p['interface'], p['evpn'], p['uuid'], "bridge")
+        vm_acl(p['interface'], p['evpn'], p['uuid'], "bridge")
+        vm_routes(p, 'ip', p['vrf'], p['evpn'], p['interface'], p['uuid'], p['ip'], p['mac'], "bridge")
+        vm_enable_mac_learning(p, "bridge")
+
+def vm_port_setup():
+    vm_restart()
+    for vrf in vrfs:
+        add_vrf(vrf['id'], vrf['tnl_id'])
+    ofctlby_property('ovs-ofctl add-evpn alubr0', evpns)
+    #for evpn in evpns:
+    #    add_evpn(evpn['id'], evpn['vrf'], evpn['flags'], evpn['id'], evpn['subnet'], evpn['mask'],
+    #             evpn['gw_ip'], evpn['gw_mac'], evpn['v6_subnet'], evpn['v6_mask'], evpn['v6_gw'],evpn['dhcp_pool_range'],)
+    for vm in vms:
+        vm_add_port(vm)
+        vm_evpn_membership(vm['name'], vm['evpn'], vm['uuid'])
+        vm_acl(vm['interface'], vm['evpn'], vm['uuid'])
+        vm_routes(vm, 'ip', vm['vrf'], vm['evpn'], vm['interface'],\
+                  vm['uuid'], vm['ip'], vm['mac'])
+        vm_dhcp_info(vm['interface'], vm['evpn'], vm['uuid'], 'ip', vm['ip'])
+        vm_dhcp_info(vm['interface'], vm['evpn'], vm['uuid'], 'ipv6', vm['ipv6'])
+        print "-------"
+        vm_routes(vm, 'ipv6', vm['vrf'], vm['evpn'], vm['name'], vm['uuid'],\
+                  vm['ipv6'], vm['mac'])
+        print "-------"
+        #vm_enable_mac_learning(vm)
+
+def fip_config():
+    for vm in vms:
+        vm_fips(vm['name'], vm['uuid'], vm['ip'], vm['fip'], vm['pub_vrf'])
+
+def static_routes():
+    for vrf in vrfs:
+        for rt in vrf['static_routes']:
+            exe(add_flow + "flow_type=route,ip,flags=ecmp,vrf_id="+str(vrf['id'])+",nw_dst="\
+                +rt['ip']+",n_hop=0\|1,nhop_flag=remote,mvpn_id="\
+                +str(vrf['id']*11)+",tep_addr="+rt['tep_addr'])
+            #print "----------------------------"
+            print "static ecmp remote route added for "+rt['ip'] +" in vrf "\
+                  +str(vrf['id'])
+            #print "----------------------------"
+
+def print_qos_cfg():
+    clis = ["qdisc", "class", "filter" ]
+    print "\n********* Ingress fip qos  *********"
+    for c in clis:
+        os.system("tc -p -s -d "+c+" show dev svc-rl-tap1")
+
+    for vm in vms:
+        print "\n********* Egress fip qos for "+vm['name']+ " *********"
+        for c in clis:
+            os.system("tc -p -s -d "+c+" show dev "+vm['name'])
+"""
+        os.system("tc -p -s -d qdisc  show   dev  "+vm['name']+";"\
+                  "tc -p -s -d  class show dev "+vm['name']+";"\
+                  "tc -p -s -d  filter show dev "+vm['name'])
+"""
+
+def readconfig(cfg_file):
+    with open(cfg_file) as data_file:
+        data = json.load(data_file)
+    global vrfs
+    global evpns
+    global vms
+    global bridge_ports
+    vrfs = data['vrfs']
+    evpns = data['evpns']
+    vms = data['vms']
+    bridge_ports = data['bridge_ports']
+
+    vport_macs = get_macs()
+    uuids = get_uuids()
+    for vm in vms:
+        vm['mac'] = vport_macs[vm['interface']]
+        vm['uuid'] = uuids[vm['interface']]
+        #vms[vm['interface']] = vm
+
+def vm_restart():
+    for vm in vms:
+        vm_start(vm);
+    time.sleep(5)
+
+
+def port_show(port_type = "vm"):
+    os.system("ovs-appctl "+port_type+"/port-show");
+
+def vm_port_show():
+    port_show()
+
+def bridge_port_show():
+    port_show("bridge")
+
+def vrf_show():
+    os.system("ovs-appctl vrf/show alubr0");
+def evpn_show():
+    os.system("ovs-appctl evpn/show alubr0");
+def print_setup_log():
+    os.system("cat /var/tmp/setup.log");
+
+menu = {
+         0: [ 'ovs-restart', ovs_restart ],
+         1: [ 'vm-port-setup', vm_port_setup ],
+         2: [ 'bridge-port-setup', bridge_port_setup ],
+         3: [ 'remote static routes', static_routes ],
+         4: [ 'fip config', fip_config ],
+         5: [ 'vrf/show', vrf_show ],
+         6: [ 'evpn/show', evpn_show ],
+         7: [ 'vm/port-show', vm_port_show ],
+         8: [ 'bridge/port-show', bridge_port_show ],
+         9: [ 'Egress fip qos config show', print_qos_cfg ],
+         10: [ 'namespace vm dhcp', ns_vm_dhcp],
+         11: [ 're intialize', init],
+    }
+
+def main(argv):
+    cfg_file = "config.json"
+    if len(sys.argv) < 2:
+        print "Usage: ./setup.py [config-file]"
+        return
+    elif len(sys.argv) == 2:
+        cfg_file = str(sys.argv[1])
+
+    while True:
+        print("Config-File : %s"% (cfg_file))
+        if os.path.exists(logfile) and os.path.getsize(logfile) >= 2000:
+            os.system("echo ""  > "+logfile)
+        for m in menu:
+            print "\t" + str(m)+".  "+menu[m][0]
+        ch = raw_input("Choose ? ")
+        readconfig(cfg_file)
+        print ""
+        if not ch.isdigit():
+           continue;
+        if int(ch) != 99:
+           if (len(menu) -1) >= int(ch):
+              menu[int(ch)][1]()
+        else:
+           break
+
+if __name__ == "__main__":
+   main(sys.argv[1:])

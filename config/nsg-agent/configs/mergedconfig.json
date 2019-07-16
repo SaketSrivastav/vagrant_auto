@@ -1,0 +1,705 @@
+{
+    "iptables": [
+        "-P INPUT DROP", 
+        "-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT", 
+        "-A INPUT -p icmp -j ACCEPT", 
+        "-A INPUT -p gre -j ACCEPT", 
+        "-A INPUT -m tcp -p tcp --dport 893 -j ACCEPT", 
+        "-A INPUT -m udp -p udp --dport 4789 -j ACCEPT", 
+        "-A INPUT -m udp -p udp --dport 5770 -j ACCEPT", 
+        "-A INPUT -m udp -p udp --dport 4500 -j ACCEPT", 
+        "-A INPUT -m udp -p udp --dport 500 -j ACCEPT", 
+        "-A INPUT -m tcp -p tcp --dport 179 -j ACCEPT", 
+        "-A INPUT -p icmpv6 -j ACCEPT", 
+        "-A INPUT -m state --state NEW -m udp -p udp --dport 546 --sport 547 -j ACCEPT", 
+        "-A INPUT -p ipv4 -j ACCEPT", 
+        "-A INPUT -p esp -j ACCEPT", 
+        "-A INPUT -m limit --limit 5/min -j LOG --log-prefix 'iptables_INPUT_denied: ' --log-level 7", 
+        "-t mangle -m mark --mark 0x2/0x3 -A PREROUTING -j CONNMARK --save-mark", 
+        "-t mangle -m mark --mark 0x3/0x3 -A PREROUTING -j CONNMARK --save-mark", 
+        "-t mangle -A FORWARD -j CONNMARK --restore-mark", 
+        "-t nat -A POSTROUTING -j MASQUERADE -m mark --mark 0x2/0x3 -o ppp0", 
+        "-t filter -I INPUT -p esp -j ACCEPT", 
+        "-I INPUT -i svc-app-tap -p udp -m udp --dport 50000 -j ACCEPT", 
+        "-I INPUT -i svc-app-tap -p udp -m udp --dport 50001 -j ACCEPT", 
+        "-I INPUT -i svc-app-tap -p udp -m udp --dport 50002 -j ACCEPT", 
+        "-I INPUT -i svc-app-tap -p udp -m udp --dport 50003 -j ACCEPT", 
+        "-A INPUT -i lo -j ACCEPT", 
+        "-A INPUT -j DROP", 
+        "-P FORWARD ACCEPT", 
+        "-P OUTPUT ACCEPT", 
+        "-t mangle -N PREROUTING_PAT_STATS", 
+        "-t mangle -N POSTROUTING_PAT_STATS", 
+        "-t mangle -D PREROUTING -j PREROUTING_PAT_STATS", 
+        "-t mangle -D POSTROUTING -j POSTROUTING_PAT_STATS", 
+        "-t mangle -A PREROUTING -j PREROUTING_PAT_STATS", 
+        "-t mangle -A POSTROUTING -j POSTROUTING_PAT_STATS", 
+        "-t mangle -I OUTPUT -p udp -m multiport --destination-port 3784,4784 -j CLASSIFY --set-class 0:64"
+    ], 
+    "keyserver": {
+        "certificates": [
+            {
+                "subjectDN": "O=csp, CN=vsd-3.mvdcdev37.us.alcatel-lucent.com", 
+                "issuerDN": "CN=VSPCA", 
+                "fqdn": "vsd-3.mvdcdev37.us.alcatel-lucent.com", 
+                "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoGqd5sgmaLFjiUZ4QO3xbLHiQ3j4LuyALdUNCNzBJFaXARNAWcRlAKLgZ7wEAjOwtBn2fkHmwkH+NoThhJZGf+mpoRLX4SGbOQsQG4Mm2a/K4Z3+VLfgTOlulcOiXHILmaEBOMzE5lqwFe8N3XBD43qRCE9T0BKMW/KJGmM99lkEJZT3BAcLPmvRCAtx4Oh9myeUcuiVJwT7liKFphwU9zNldHHf1GmYto2IH0BVl5+m57u1iw2TQ14uVeKCWcur6BokxWI/vWDkDR0HKBFUb5qq4CQSYbp9QZvcNvAjKmmodI5r0NmyljaRR/3nQP+VjoU27g+cfNSHgffiOT/OuwIDAQAB", 
+                "pemEncoded": "-----BEGIN CERTIFICATE-----\nMIIEhDCCA2ygAwIBAgIIbXaHpaKRmkswDQYJKoZIhvcNAQELBQAwEDEOMAwGA1UE\nAwwFVlNQQ0EwHhcNMTgwNzA3MTMxMTA3WhcNMjAwNzA3MTMxMTA3WjA+MS4wLAYD\nVQQDDCV2c2QtMy5tdmRjZGV2MzcudXMuYWxjYXRlbC1sdWNlbnQuY29tMQwwCgYD\nVQQKDANjc3AwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCgap3myCZo\nsWOJRnhA7fFsseJDePgu7IAt1Q0I3MEkVpcBE0BZxGUAouBnvAQCM7C0GfZ+QebC\nQf42hOGElkZ/6amhEtfhIZs5CxAbgybZr8rhnf5Ut+BM6W6Vw6JccguZoQE4zMTm\nWrAV7w3dcEPjepEIT1PQEoxb8okaYz32WQQllPcEBws+a9EIC3Hg6H2bJ5Ry6JUn\nBPuWIoWmHBT3M2V0cd/UaZi2jYgfQFWXn6bnu7WLDZNDXi5V4oJZy6voGiTFYj+9\nYOQNHQcoEVRvmqrgJBJhun1Bm9w28CMqaah0jmvQ2bKWNpFH/edA/5WOhTbuD5x8\n1IeB9+I5P867AgMBAAGjggGyMIIBrjAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaA\nFLxCdszAOGlHYg9i3uFEoy3Nm2LHMGgGCCsGAQUFBwEBBFwwWjBYBggrBgEFBQcw\nAYZMaHR0cDovL3htcHAubXZkY2RldjM3LnVzLmFsY2F0ZWwtbHVjZW50LmNvbTo3\nMDgwL2VqYmNhL3B1YmxpY3dlYi9zdGF0dXMvb2NzcDAvBgNVHREEKDAmgiR4bXBw\nLm12ZGNkZXYzNy51cy5hbGNhdGVsLWx1Y2VudC5jb20wHQYDVR0lBBYwFAYIKwYB\nBQUHAwEGCCsGAQUFBwMCMIGTBgNVHR8EgYswgYgwgYWgbaBrhmlodHRwOi8veG1w\ncC5tdmRjZGV2MzcudXMuYWxjYXRlbC1sdWNlbnQuY29tOjcwODAvZWpiY2EvcHVi\nbGljd2ViL3dlYmRpc3QvY2VydGRpc3Q/Y21kPWNybCZpc3N1ZXI9Q049VlNQQ0Gi\nFKQSMBAxDjAMBgNVBAMMBVZTUENBMB0GA1UdDgQWBBT8FzDcWjc1TIjTeKF4obiM\ndj1yejAOBgNVHQ8BAf8EBAMCBeAwDQYJKoZIhvcNAQELBQADggEBAEIpGxer1IP5\nLW/41NqEvRdkaWiwk2Px7hY2T6YwW6ZjfRF3X62TQO40RxsW1pDXPPoD0HIGFGrQ\nUkPRbRVfw6LXjnaKxSaaV5vPKd1SUDRasRBXrqBzb2GH53qz64Hb0nPsKbCGXB6q\nY6KlsddIBwifyk8S9dGO4X1mS/sLU8/A2VxFCFjZykoelHjdIo8XCzrZOiNvLSap\ntXXLaIb35OvlEgJv8a4G9NdvEUEOH4iGz2BBr+rC5fBX/B0anemyO87pZ3Z+axFf\naOI9mNyFqMhfosTtageLOwrCkfN9Qgz6R96Ih2+bsMaKl9ajbwga5XD6DhTraBx5\nmK1IL8Dzdic=\n-----END CERTIFICATE-----\n", 
+                "serialNumber": "7887640942852807243"
+            }, 
+            {
+                "subjectDN": "O=csp, CN=vsd-2.mvdcdev37.us.alcatel-lucent.com", 
+                "issuerDN": "CN=VSPCA", 
+                "fqdn": "vsd-2.mvdcdev37.us.alcatel-lucent.com", 
+                "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw+Fvhu3oh2jccf71l9rk5mGDHOVLJaypuwvM8uFmzcrXpDTumgF16Tpmy+DL3IrTVujnA1uZiOYSWf4ihAO5eg2+vEzRAVIYgJI8erOw8BZPKfvgF9hx4gYkD2kqnoWLErdcFx6iwnSJrJGDd6WQEM4jC7tH7Q6wkicvAQksHe0F+fBEdNRB/XGfYjRwVCbjnvGYTMO83aP6d4AOub6ES6gke7A55Y+CmEC+mOy16e9UWvQ7qKnIqiVL12+AlFhYxB9xLC+tufrutyhLm+W7L2uuWXoAwVpAulvH4vsQ+AAnEihOI+W3m8e+P7jY3ad1ll8ogFhuWTussjSEsdPJ/QIDAQAB", 
+                "pemEncoded": "-----BEGIN CERTIFICATE-----\nMIIEhDCCA2ygAwIBAgIIIoEW1GE0QGYwDQYJKoZIhvcNAQELBQAwEDEOMAwGA1UE\nAwwFVlNQQ0EwHhcNMTgwNzA3MTMxMTA3WhcNMjAwNzA3MTMxMTA3WjA+MS4wLAYD\nVQQDDCV2c2QtMi5tdmRjZGV2MzcudXMuYWxjYXRlbC1sdWNlbnQuY29tMQwwCgYD\nVQQKDANjc3AwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDD4W+G7eiH\naNxx/vWX2uTmYYMc5UslrKm7C8zy4WbNytekNO6aAXXpOmbL4MvcitNW6OcDW5mI\n5hJZ/iKEA7l6Db68TNEBUhiAkjx6s7DwFk8p++AX2HHiBiQPaSqehYsSt1wXHqLC\ndImskYN3pZAQziMLu0ftDrCSJy8BCSwd7QX58ER01EH9cZ9iNHBUJuOe8ZhMw7zd\no/p3gA65voRLqCR7sDnlj4KYQL6Y7LXp71Ra9DuoqciqJUvXb4CUWFjEH3EsL625\n+u63KEub5bsva65ZegDBWkC6W8fi+xD4ACcSKE4j5bebx74/uNjdp3WWXyiAWG5Z\nO6yyNISx08n9AgMBAAGjggGyMIIBrjAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaA\nFLxCdszAOGlHYg9i3uFEoy3Nm2LHMGgGCCsGAQUFBwEBBFwwWjBYBggrBgEFBQcw\nAYZMaHR0cDovL3htcHAubXZkY2RldjM3LnVzLmFsY2F0ZWwtbHVjZW50LmNvbTo3\nMDgwL2VqYmNhL3B1YmxpY3dlYi9zdGF0dXMvb2NzcDAvBgNVHREEKDAmgiR4bXBw\nLm12ZGNkZXYzNy51cy5hbGNhdGVsLWx1Y2VudC5jb20wHQYDVR0lBBYwFAYIKwYB\nBQUHAwEGCCsGAQUFBwMCMIGTBgNVHR8EgYswgYgwgYWgbaBrhmlodHRwOi8veG1w\ncC5tdmRjZGV2MzcudXMuYWxjYXRlbC1sdWNlbnQuY29tOjcwODAvZWpiY2EvcHVi\nbGljd2ViL3dlYmRpc3QvY2VydGRpc3Q/Y21kPWNybCZpc3N1ZXI9Q049VlNQQ0Gi\nFKQSMBAxDjAMBgNVBAMMBVZTUENBMB0GA1UdDgQWBBQhn/OZY2Tac11UaezMJjk3\nCAPffDAOBgNVHQ8BAf8EBAMCBeAwDQYJKoZIhvcNAQELBQADggEBAAq5feNLtEzH\nir5c+xsEUro7FkLCqul/8fKQlYz4pNFXHbo7pFLxhbbsFm6zYqkFLtEd6jmXT/CE\nntmte1osctLIqS2a4d2yBgpXfrIdAUHouj/46sKZf9Fb4jRSUQBoVOtGp//xkzr5\nHyMZso9467Vvxt9QTDv7qXjlnlBoOOxv36/Iy/TAOpDSN/iMUtLUvVKLA6BcuTNu\nl1hu4YR9l3MZSo8c5Js3yYaHFng10q9KwsKiWqd7GBNbhY5Vpo+PhjvZBFslV+kJ\nILz3cZ9Pva+IISFa63hutOstFEHyRwX49yTUNhuXYcPMU3kPvcA+JObJNaVAEtD3\nr8j+bgkOu9Y=\n-----END CERTIFICATE-----\n", 
+                "serialNumber": "2486293570704916582"
+            }, 
+            {
+                "subjectDN": "O=csp, CN=vsd-1.mvdcdev37.us.alcatel-lucent.com", 
+                "issuerDN": "CN=VSPCA", 
+                "fqdn": "vsd-1.mvdcdev37.us.alcatel-lucent.com", 
+                "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkuvcYnKxfHr1z5PeEHepLqHFJPCYKibBjLxFq/edkl6Ir0NgxN0OBGBIwABHhHdePGf6wtjwfZ0znuaBr5vyHk1P1u7G4F6zomxujK+pGwHCuqYgnjtGSRegG/3NdNcdfYhWVpMHFlOBcMacdVn9IBYQZRZmMjH9cxdmvuQYCYZ9fD+VxqBi31QfJ+RXaPosjTkcFagX/55rVXH7Rwo/6C1DZx+n1lHT5gt1pcL3NFZx85C2woXpd7uR2ueQ5GQWnDM+zPQ5aaniWnytZVFhwFRI6ifY9Wv4drKej5tiFWZGeA186X/tlBg5map7wog6ZLSvvN3D1/xIKKh5Kr0UXwIDAQAB", 
+                "pemEncoded": "-----BEGIN CERTIFICATE-----\nMIIEhDCCA2ygAwIBAgIIE21Q8qIvEwEwDQYJKoZIhvcNAQELBQAwEDEOMAwGA1UE\nAwwFVlNQQ0EwHhcNMTgwNzA3MTMxMTA3WhcNMjAwNzA3MTMxMTA3WjA+MS4wLAYD\nVQQDDCV2c2QtMS5tdmRjZGV2MzcudXMuYWxjYXRlbC1sdWNlbnQuY29tMQwwCgYD\nVQQKDANjc3AwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCS69xicrF8\nevXPk94Qd6kuocUk8JgqJsGMvEWr952SXoivQ2DE3Q4EYEjAAEeEd148Z/rC2PB9\nnTOe5oGvm/IeTU/W7sbgXrOibG6Mr6kbAcK6piCeO0ZJF6Ab/c101x19iFZWkwcW\nU4Fwxpx1Wf0gFhBlFmYyMf1zF2a+5BgJhn18P5XGoGLfVB8n5Fdo+iyNORwVqBf/\nnmtVcftHCj/oLUNnH6fWUdPmC3Wlwvc0VnHzkLbChel3u5Ha55DkZBacMz7M9Dlp\nqeJafK1lUWHAVEjqJ9j1a/h2sp6Pm2IVZkZ4DXzpf+2UGDmZqnvCiDpktK+83cPX\n/EgoqHkqvRRfAgMBAAGjggGyMIIBrjAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaA\nFLxCdszAOGlHYg9i3uFEoy3Nm2LHMGgGCCsGAQUFBwEBBFwwWjBYBggrBgEFBQcw\nAYZMaHR0cDovL3htcHAubXZkY2RldjM3LnVzLmFsY2F0ZWwtbHVjZW50LmNvbTo3\nMDgwL2VqYmNhL3B1YmxpY3dlYi9zdGF0dXMvb2NzcDAvBgNVHREEKDAmgiR4bXBw\nLm12ZGNkZXYzNy51cy5hbGNhdGVsLWx1Y2VudC5jb20wHQYDVR0lBBYwFAYIKwYB\nBQUHAwEGCCsGAQUFBwMCMIGTBgNVHR8EgYswgYgwgYWgbaBrhmlodHRwOi8veG1w\ncC5tdmRjZGV2MzcudXMuYWxjYXRlbC1sdWNlbnQuY29tOjcwODAvZWpiY2EvcHVi\nbGljd2ViL3dlYmRpc3QvY2VydGRpc3Q/Y21kPWNybCZpc3N1ZXI9Q049VlNQQ0Gi\nFKQSMBAxDjAMBgNVBAMMBVZTUENBMB0GA1UdDgQWBBTDTFEAVSw/9snLv3gnnEdU\nRiF4AzAOBgNVHQ8BAf8EBAMCBeAwDQYJKoZIhvcNAQELBQADggEBADOZEYSdoOr/\n/ZB5ZRTSUb/mk+5DrpppWkozmKsnf7TN/6XhHJbGl3AtAtxX9l/Nuhb5k7FWIWaN\n4wxxZeDac69jgw0f1LYmvLyOM8xrzloOP5cLa6zUaslGPrE8XJEhu3xn+O1msZv/\nTruX6wcJhjRfcc5O8B+q22Vn0DrLFr9bkLBWyW6xxwZ6KGtNIzsizSG8BWMpDdIL\n9vfl2H0G34vy10n7Pins3y0Cp92KPvVDNBYtkeemvKQnKtAq7FBqRfc5ksvJtOg9\nI1gQ5t5Ku+/tcyRmfhvk6zpxFFM3+l8EPmlTsez05WAWvCCrIeJ/IxcqXyNlLL9J\n2ao1Y3KNMDc=\n-----END CERTIFICATE-----\n", 
+                "serialNumber": "1399864062215394049"
+            }
+        ]
+    }, 
+    "uplinkVlanIntListForDeletion": null, 
+    "certificateAuthority": {
+        "expireTime": "Tue Jul 04 06:20:32 PDT 2028", 
+        "certificateSerialNumber": "2BD3BADE1DC99611", 
+        "issuerDN": "CN=VSPCA", 
+        "name": "VSPCA", 
+        "subjectDN": "CN=VSPCA"
+    }, 
+    "interfaces": {
+        "port8": {
+            "static": false, 
+            "speed": "autoneg", 
+            "MACADDR": "fa:ac:a6:10:55:07", 
+            "duplex": "full", 
+            "userMnemonic": null, 
+            "physicalName": "port8", 
+            "NM_CONTROLLED": "yes", 
+            "vlanRange": "0-4094", 
+            "portType": "ACCESS", 
+            "ONBOOT": "yes", 
+            "status": "READY", 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "MTU": 1500, 
+            "BOOTPROTO": "none", 
+            "PORT_TYPE": "Access", 
+            "DEVICE": "port8", 
+            "profileName": "", 
+            "vlans": [], 
+            "name": "port8", 
+            "UUID": "088834e4-8268-46b8-ac5e-a7e14a7cf0a0", 
+            "mtu": 1500, 
+            "profileDescription": "", 
+            "TYPE": "Ethernet", 
+            "mustache": {
+                "useMTU": true
+            }
+        }, 
+        "port6": {
+            "static": false, 
+            "speed": "autoneg", 
+            "MACADDR": "fa:ac:a6:10:55:05", 
+            "duplex": "full", 
+            "userMnemonic": null, 
+            "physicalName": "port6", 
+            "NM_CONTROLLED": "yes", 
+            "vlanRange": "0-4094", 
+            "portType": "ACCESS", 
+            "ONBOOT": "yes", 
+            "status": "READY", 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "MTU": 1500, 
+            "BOOTPROTO": "none", 
+            "PORT_TYPE": "Access", 
+            "DEVICE": "port6", 
+            "profileName": "", 
+            "vlans": [], 
+            "name": "port6", 
+            "UUID": "bf0fea66-47b9-4476-a14b-2e68c47c7598", 
+            "mtu": 1500, 
+            "profileDescription": "", 
+            "TYPE": "Ethernet", 
+            "mustache": {
+                "useMTU": true
+            }
+        }, 
+        "port7": {
+            "static": false, 
+            "speed": "autoneg", 
+            "MACADDR": "fa:ac:a6:10:55:06", 
+            "duplex": "full", 
+            "userMnemonic": null, 
+            "physicalName": "port7", 
+            "NM_CONTROLLED": "yes", 
+            "vlanRange": "0-4094", 
+            "portType": "ACCESS", 
+            "ONBOOT": "yes", 
+            "status": "READY", 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "MTU": 1500, 
+            "BOOTPROTO": "none", 
+            "PORT_TYPE": "Access", 
+            "DEVICE": "port7", 
+            "profileName": "", 
+            "vlans": [], 
+            "name": "port7", 
+            "UUID": "89af31f4-ebfd-400f-960b-1faf56e14459", 
+            "mtu": 1500, 
+            "profileDescription": "", 
+            "TYPE": "Ethernet", 
+            "mustache": {
+                "useMTU": true
+            }
+        }, 
+        "port4": {
+            "static": false, 
+            "speed": "autoneg", 
+            "MACADDR": "fa:ac:a6:10:55:03", 
+            "duplex": "full", 
+            "userMnemonic": null, 
+            "physicalName": "port4", 
+            "NM_CONTROLLED": "yes", 
+            "vlanRange": "0-4094", 
+            "portType": "ACCESS", 
+            "ONBOOT": "yes", 
+            "status": "READY", 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "MTU": 1500, 
+            "BOOTPROTO": "none", 
+            "PORT_TYPE": "Access", 
+            "DEVICE": "port4", 
+            "profileName": "", 
+            "vlans": [], 
+            "name": "port4", 
+            "UUID": "eb42865a-0fe8-4fc3-9497-ab0163c2a463", 
+            "mtu": 1500, 
+            "profileDescription": "", 
+            "TYPE": "Ethernet", 
+            "mustache": {
+                "useMTU": true
+            }
+        }, 
+        "port5": {
+            "static": false, 
+            "speed": "autoneg", 
+            "MACADDR": "fa:ac:a6:10:55:04", 
+            "duplex": "full", 
+            "userMnemonic": null, 
+            "physicalName": "port5", 
+            "NM_CONTROLLED": "yes", 
+            "vlanRange": "0-4094", 
+            "portType": "ACCESS", 
+            "ONBOOT": "yes", 
+            "status": "READY", 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "MTU": 1500, 
+            "BOOTPROTO": "none", 
+            "PORT_TYPE": "Access", 
+            "DEVICE": "port5", 
+            "profileName": "", 
+            "vlans": [], 
+            "name": "port5", 
+            "UUID": "eabbeff7-4760-4546-8fbf-9a432658a86e", 
+            "mtu": 1500, 
+            "profileDescription": "", 
+            "TYPE": "Ethernet", 
+            "mustache": {
+                "useMTU": true
+            }
+        }, 
+        "eth1": {
+            "static": false, 
+            "speed": "autoneg", 
+            "MACADDR": "fa:ac:a6:10:55:01", 
+            "duplex": "full", 
+            "userMnemonic": null, 
+            "physicalName": "eth1", 
+            "NM_CONTROLLED": "yes", 
+            "vlanRange": "0-4094", 
+            "portType": "ACCESS", 
+            "ONBOOT": "yes", 
+            "status": "READY", 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "MTU": 1500, 
+            "BOOTPROTO": "none", 
+            "PORT_TYPE": "Access", 
+            "DEVICE": "eth1", 
+            "profileName": "", 
+            "vlans": [], 
+            "name": "eth1", 
+            "UUID": "6c88f4c8-845c-4f2a-90db-73e318f13fe9", 
+            "mtu": 1500, 
+            "profileDescription": "", 
+            "TYPE": "Ethernet", 
+            "mustache": {
+                "useMTU": true
+            }
+        }, 
+        "port3": {
+            "static": false, 
+            "speed": "autoneg", 
+            "MACADDR": "fa:ac:a6:10:55:02", 
+            "duplex": "full", 
+            "userMnemonic": null, 
+            "physicalName": "port3", 
+            "NM_CONTROLLED": "yes", 
+            "vlanRange": "0-4094", 
+            "portType": "ACCESS", 
+            "ONBOOT": "yes", 
+            "status": "READY", 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "MTU": 1500, 
+            "BOOTPROTO": "none", 
+            "PORT_TYPE": "Access", 
+            "DEVICE": "port3", 
+            "profileName": "", 
+            "vlans": [], 
+            "name": "port3", 
+            "UUID": "5ea5ebfa-f65c-4f41-8b47-10c081442e1d", 
+            "mtu": 1500, 
+            "profileDescription": "", 
+            "TYPE": "Ethernet", 
+            "mustache": {
+                "useMTU": true
+            }
+        }, 
+        "eth0": {
+            "alias": "ppp0", 
+            "status": "READY", 
+            "enableNATProbes": true, 
+            "originalPortUuid": "01121e43-412b-4c55-bfe5-91d849f3a4b9", 
+            "networkAccelerationEnabled": false, 
+            "probeToUBROnly": false, 
+            "DEVICE": "eth0", 
+            "static": false, 
+            "IPV6_FAILURE_FATAL": "no", 
+            "uplinkTag": "PRIMARY", 
+            "speed": "autoneg", 
+            "IPV6INIT": "yes", 
+            "MACADDR": "fa:ac:a6:10:55:00", 
+            "isPPPoEEnabled": "yes", 
+            "activeController": "10.10.13.7", 
+            "natTraversal": "full_cone", 
+            "standbyControllerV6": null, 
+            "userMnemonic": null, 
+            "physicalName": "eth0", 
+            "NM_CONTROLLED": "yes", 
+            "IPV4_ROUTE_METRIC": 100, 
+            "ipv6": false, 
+            "portType": "NETWORK", 
+            "downloadRateLimit": 8.0, 
+            "ONBOOT": "yes", 
+            "portUuid": "26123eef-4671-4951-aac5-e3d08fa4d908", 
+            "IPV6_ROUTE_METRIC": 100, 
+            "standbyController": "10.10.15.9", 
+            "ETHTOOL_OPTS": "autoneg on", 
+            "pppoeConfig": {
+                "USER": "mk", 
+                "PASS": "mk"
+            }, 
+            "METRIC": 100, 
+            "vlanRange": "0-4094", 
+            "MTU": 1500, 
+            "statsCollectionInterval": 60, 
+            "BOOTPROTO": "none", 
+            "PORT_TYPE": "Network", 
+            "profileDescription": "", 
+            "IPV6_AUTOCONF": "yes", 
+            "profileName": "", 
+            "vlans": [
+                {
+                    "PATEnabled": true, 
+                    "UnderlayEnabled": true, 
+                    "uplinkID": 1, 
+                    "isPPPoEEnabled": "yes", 
+                    "statsCollectionInterval": 60, 
+                    "pppoeConfig": {
+                        "USER": "mk", 
+                        "PASS": "mk"
+                    }, 
+                    "vlanId": 0, 
+                    "underlayID": 0, 
+                    "alias": "ppp0", 
+                    "status": "READY", 
+                    "userMnemonic": null, 
+                    "uplinkTag": "PRIMARY", 
+                    "vportId": null, 
+                    "advertisementCriteria": "CONTROL_SESSION", 
+                    "uuid": "26123eef-4671-4951-aac5-e3d08fa4d908"
+                }
+            ], 
+            "UPLINK_TAG": "primary", 
+            "UPLINK_TAG_VLAN_CONFIG": "primary1", 
+            "UUID": "b6417471-6a6c-4542-bb8a-54b0e83f2bf9", 
+            "probeInterval": 5000, 
+            "name": "NSGTemplate1", 
+            "mtu": 1500, 
+            "duplex": "full", 
+            "activeControllerV6": null, 
+            "DHCPV6C": "yes", 
+            "TYPE": "Ethernet", 
+            "mustache": {
+                "useMTU": true, 
+                "useVlanUplink": false, 
+                "useSecondaryIPAddr": false
+            }
+        }
+    }, 
+    "configUrl": "https://util-1.mvdcdev37.us.alcatel-lucent.com:11443/nuage/api/v5_0/nsgateways/1fcb9841-1d71-434e-9a66-9e64bcbcbd56/infraconfig", 
+    "system": {
+        "vnfTaskTimeout": 3600
+    }, 
+    "rest": {
+        "hostname": "util-1.mvdcdev37.us.alcatel-lucent.com", 
+        "configUrl": [
+            "https:", 
+            "", 
+            "util-1.mvdcdev37.us.alcatel-lucent.com:11443", 
+            "nuage", 
+            "api", 
+            "v5_0", 
+            "nsgateways", 
+            "1fcb9841-1d71-434e-9a66-9e64bcbcbd56", 
+            "infraconfig"
+        ], 
+        "port": "11443", 
+        "restroot": "/nuage/api/v5_0/nsgateways/1fcb9841-1d71-434e-9a66-9e64bcbcbd56/infraconfig"
+    }, 
+    "gateway": {
+        "ntpServerKeyID": 0, 
+        "enableNATProbes": true, 
+        "uplinks": [
+            {
+                "v4": {
+                    "installermanaged": false, 
+                    "mode": "pppoe", 
+                    "pppoe": {
+                        "user": "mk", 
+                        "pass": "mk"
+                    }
+                }, 
+                "name": "eth0"
+            }
+        ], 
+        "upgradeAction": "none", 
+        "sgtDSCP": 56, 
+        "tcpMss": 0, 
+        "remoteLogServerAddress": "util-1.mvdcdev37.us.alcatel-lucent.com", 
+        "masterSlaveList": "eth0:ppp0", 
+        "id": "1fcb9841-1d71-434e-9a66-9e64bcbcbd56", 
+        "uplinkList": [
+            {
+                "enableNATProbes": "yes", 
+                "probeToUBROnly": "no", 
+                "interface": "eth0", 
+                "staticAddress": "NONE", 
+                "masterSlave": "eth0:ppp0", 
+                "isPPPoEEnabled": true, 
+                "activeController": "10.10.13.7", 
+                "alias": "ppp0", 
+                "advertisementCriteria": "CONTROL_SESSION", 
+                "useProxyArp": false, 
+                "UnderlayEnabled": true, 
+                "standbyController": "10.10.15.9", 
+                "probeInterval": 5000, 
+                "vlanId": 0, 
+                "uplinkKey": "UPLINK1", 
+                "v4": {
+                    "installermanaged": false, 
+                    "mode": "pppoe", 
+                    "pppoe": {
+                        "user": "mk", 
+                        "pass": "mk"
+                    }
+                }, 
+                "DEVICE": "eth0", 
+                "UPLINK_TAG_VLAN_CONFIG": "primary1", 
+                "uuid": "26123eef-4671-4951-aac5-e3d08fa4d908", 
+                "PATEnabled": true, 
+                "uplinkID": 1, 
+                "name": "eth0:primary1", 
+                "statsCollectionInterval": 60, 
+                "staticV6Address": "NONE", 
+                "natTraversalType": "full_cone", 
+                "isLTEEnabled": false, 
+                "mustache": {
+                    "useadvertisementCriteria": true, 
+                    "ProbeToUBROnly": true, 
+                    "useProbeInt": true, 
+                    "NetworkMode": true, 
+                    "useActiveCtrl": true, 
+                    "usePATEnabled": true, 
+                    "useActiveCtrlV6": false, 
+                    "usePPPoEEnabled": true, 
+                    "useStandbyCtrlV6": false, 
+                    "useStandbyCtrl": true, 
+                    "enableNATProbes": true, 
+                    "useuplinkID": true, 
+                    "useunderlayID": false, 
+                    "useUnderlayEnabled": true, 
+                    "usesecondaryIp": false, 
+                    "useNatTraversal": true
+                }
+            }
+        ], 
+        "flowEvictionThreshold": 2500, 
+        "tcpMssEnabled": false, 
+        "systemSyncWindow": 0, 
+        "remoteLogType": "rsyslog", 
+        "systemSyncScheduler": "0 0 * * *", 
+        "hostname": "nsg-149-82-224-238", 
+        "natTraversal": true, 
+        "stats_collector": {
+            "port": "39090", 
+            "address": "util-1.mvdcdev37.us.alcatel-lucent.com"
+        }, 
+        "datapathSyncTimeout": 1000, 
+        "ntpServerKey": null, 
+        "personality": "nsg", 
+        "networkPort": "eth0", 
+        "probeToUBROnly": false, 
+        "description": "ovs-1", 
+        "uplink1": {
+            "enableNATProbes": "yes", 
+            "probeToUBROnly": "no", 
+            "interface": "eth0", 
+            "staticAddress": "NONE", 
+            "masterSlave": "eth0:ppp0", 
+            "isPPPoEEnabled": true, 
+            "activeController": "10.10.13.7", 
+            "alias": "ppp0", 
+            "advertisementCriteria": "CONTROL_SESSION", 
+            "useProxyArp": false, 
+            "UnderlayEnabled": true, 
+            "standbyController": "10.10.15.9", 
+            "probeInterval": 5000, 
+            "vlanId": 0, 
+            "uplinkKey": "UPLINK1", 
+            "v4": {
+                "installermanaged": false, 
+                "mode": "pppoe", 
+                "pppoe": {
+                    "user": "mk", 
+                    "pass": "mk"
+                }
+            }, 
+            "DEVICE": "eth0", 
+            "UPLINK_TAG_VLAN_CONFIG": "primary1", 
+            "uuid": "26123eef-4671-4951-aac5-e3d08fa4d908", 
+            "PATEnabled": true, 
+            "uplinkID": 1, 
+            "name": "eth0:primary1", 
+            "statsCollectionInterval": 60, 
+            "staticV6Address": "NONE", 
+            "natTraversalType": "full_cone", 
+            "isLTEEnabled": false, 
+            "mustache": {
+                "useadvertisementCriteria": true, 
+                "ProbeToUBROnly": true, 
+                "useProbeInt": true, 
+                "NetworkMode": true, 
+                "useActiveCtrl": true, 
+                "usePATEnabled": true, 
+                "useActiveCtrlV6": false, 
+                "usePPPoEEnabled": true, 
+                "useStandbyCtrlV6": false, 
+                "useStandbyCtrl": true, 
+                "enableNATProbes": true, 
+                "useuplinkID": true, 
+                "useunderlayID": false, 
+                "useUnderlayEnabled": true, 
+                "usesecondaryIp": false, 
+                "useNatTraversal": true
+            }
+        }, 
+        "sgtCOS": 7, 
+        "deadTimer": 0, 
+        "systemID": "149.82.224.238", 
+        "patNatPoolConnected": false, 
+        "profileName": "NSGTemplate1", 
+        "upgradeMetaDataPath": null, 
+        "name": "ovs-1", 
+        "proxyDNSName": "util-1.mvdcdev37.us.alcatel-lucent.com", 
+        "srk": "", 
+        "remoteLogServerPort": 10514, 
+        "profileDescription": "NSGTemplate1", 
+        "mustache": {
+            "useUplink1PATEnabled": true, 
+            "useUplink1advertisementCriteria": true, 
+            "useSgtCOS": true, 
+            "useLTE": false, 
+            "useUplink1PPPoEEnabled": true, 
+            "networkAccelerationEnabled": false, 
+            "useUplink1StandbyCtrl": true, 
+            "useDatapathSyncTimeout": true, 
+            "useUplink1ActiveCtrl": true, 
+            "useFlowEvictionThreshold": true, 
+            "useUplink1ProbeInt": true, 
+            "uplink1NetworkMode": true, 
+            "useNatTraversal": true, 
+            "useManagementPort": false, 
+            "useUplink1UnderlayEnabled": true, 
+            "useOpenflowAuditTimer": true, 
+            "usePPPoE": true, 
+            "enableUplink1NATProbes": true, 
+            "SKB_LRO_MOD_ENABLED": false, 
+            "useUplink1uplinkID": true, 
+            "useSgtDSCP": true, 
+            "useServiceIPv4Subnet": false, 
+            "useRsyslog": true, 
+            "useDatapathID": true, 
+            "useUplink1underlayID": false, 
+            "useSiteId": false, 
+            "useUplink1IPv6Addressing": false, 
+            "useProxyArp": false, 
+            "usePersonality": true, 
+            "uplink1ProbeToUBROnly": true, 
+            "useHeadLessDuration": false, 
+            "useStandbyController": false, 
+            "useUplink1ActiveCtrlV6": false, 
+            "networkAccelerationTransition": false, 
+            "useControllerLessDuration": false, 
+            "useUplink1StandbyCtrlV6": false, 
+            "useTcpMss": true, 
+            "useNtpKey": false, 
+            "useActiveController": false, 
+            "useNetworkPort": true, 
+            "useUplink1secondaryIp": false, 
+            "useStatsController": true, 
+            "useNuagePlatform": false, 
+            "useUplink1NatTraversal": true
+        }, 
+        "enterprise": "test_organization", 
+        "datapathID": "9552E0EE", 
+        "openflowAuditTimer": 180
+    }, 
+    "services": {
+        "start": [
+            "ntpd", 
+            "strongswan", 
+            "sshd"
+        ], 
+        "stop": [
+            "zfb", 
+            "httpd"
+        ]
+    }, 
+    "cert": "\r\nSubject: UID=ovs-1@test_organization,CN=ovs-1,O=test_organization\r\nIssuer: CN=VSPCA\r\n-----BEGIN CERTIFICATE-----\r\nMIIEajCCA1KgAwIBAgIITw/DfTnJFyUwDQYJKoZIhvcNAQELBQAwEDEOMAwGA1UE\r\nAwwFVlNQQ0EwHhcNMTgwNzA3MTMzNDEzWhcNMjAwNzA2MTMzNDEzWjBVMScwJQYK\r\nCZImiZPyLGQBAQwXb3ZzLTFAdGVzdF9vcmdhbml6YXRpb24xDjAMBgNVBAMMBW92\r\ncy0xMRowGAYDVQQKDBF0ZXN0X29yZ2FuaXphdGlvbjCCASIwDQYJKoZIhvcNAQEB\r\nBQADggEPADCCAQoCggEBALSn6wSfMBSyhemi2NaLLCW/Db8eUNSeSqFPq4XBsrZ+\r\nn/x7X0EX5f6W3ETGwoLeWJ4w2zBpgBrhM/Yo6cM7WahddA3/Jw+5GSGHZ0vzmEfK\r\nAqtmheS3iyAN1tdcH23AaJwHwg2YfVsW+83IpMarQUtY/RngOyWZvYt8fyFyP/Rf\r\nnRhYkipawIyrM58PlaHlZzll4qr+Qv3zQSFb/URMfXSnKbqrXKh1x1AyGsO1qF5p\r\nfNKJA2+Cni4dUOnV+LIcv3ATGekEtczRqzhxfgFmGZ3i24bbkBVcWHsWZqKfj6RM\r\n3lRNWFv6pID+VCCP0vR+wpa6vv4HVrje0SWNg0ftWiMCAwEAAaOCAYEwggF9MAwG\r\nA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUvEJ2zMA4aUdiD2Le4USjLc2bYscwaAYI\r\nKwYBBQUHAQEEXDBaMFgGCCsGAQUFBzABhkxodHRwOi8veG1wcC5tdmRjZGV2Mzcu\r\ndXMuYWxjYXRlbC1sdWNlbnQuY29tOjcwODAvZWpiY2EvcHVibGljd2ViL3N0YXR1\r\ncy9vY3NwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDCBkwYDVR0fBIGL\r\nMIGIMIGFoG2ga4ZpaHR0cDovL3htcHAubXZkY2RldjM3LnVzLmFsY2F0ZWwtbHVj\r\nZW50LmNvbTo3MDgwL2VqYmNhL3B1YmxpY3dlYi93ZWJkaXN0L2NlcnRkaXN0P2Nt\r\nZD1jcmwmaXNzdWVyPUNOPVZTUENBohSkEjAQMQ4wDAYDVQQDDAVWU1BDQTAdBgNV\r\nHQ4EFgQUHzsWgZfX3/2NqOzL4o6Ti+W4M8IwDgYDVR0PAQH/BAQDAgXgMA0GCSqG\r\nSIb3DQEBCwUAA4IBAQBPc6bidIOqaev/nbZmIj9z3pBR32kOaFEPrK8pSFY2vRzO\r\nUegpWuglWeCxiRandaCVo6np5jWmIwu9RlUV6KS88Kz2C6LFNasnPZbxFNFhguQP\r\n9TGTUzY8yPDpmkv50epQF8yzPJwdrdw7+a9QBNy0nB+d3+5svfNH8NupYvTYmCUY\r\nAYIrYX4SpOaFwq6a128nzmTl1398bDNwLDT0mXUG/L4XUeY/uKQwg0cHhFk7uYyI\r\nj7NMQvuXRDnD94cn4W0iKB1OHA+c8IzAHEhr6mO/WKi/dRASsTqc3GdkqTuFUd5d\r\nd/dR2QZabW3MgE5G24BOyMGPEYeL/I587dnxfsob\r\n-----END CERTIFICATE-----", 
+    "interfaceList": [
+        "eth0", 
+        "eth1", 
+        "port3", 
+        "port4", 
+        "port5", 
+        "port6", 
+        "port7", 
+        "port8"
+    ], 
+    "crontab": {
+        "apache": [
+            {
+                "dayofweek": "*", 
+                "comment": "Run the agent", 
+                "hour": "0", 
+                "month": "*", 
+                "command": "sleep 0 ; /opt/SDVPNAgent/agent/agent.py -a RELOAD_NSG_CONFIG", 
+                "day": "*", 
+                "minute": "0"
+            }
+        ]
+    }, 
+    "key": "\r\n-----BEGIN PRIVATE KEY-----\r\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC0p+sEnzAUsoXp\r\notjWiywlvw2/HlDUnkqhT6uFwbK2fp/8e19BF+X+ltxExsKC3lieMNswaYAa4TP2\r\nKOnDO1moXXQN/ycPuRkhh2dL85hHygKrZoXkt4sgDdbXXB9twGicB8INmH1bFvvN\r\nyKTGq0FLWP0Z4Dslmb2LfH8hcj/0X50YWJIqWsCMqzOfD5Wh5Wc5ZeKq/kL980Eh\r\nW/1eth10pym6q1yodcdQMhrDtaheaXzSiQNvgp4uHVDp1fiyHL9wExnpBLXM0as4\r\ncX4BZhmd4tuG25AVXFh7Fmain4+kTN5UTVhb+qSA/lQgj9L0fsKWur7+B1a43tEl\r\njYNH7VojAgMBAAECggEAUXsXJjuCXSN0AL/BW2rkG5ZDZfsPbAaFFKKxcx+9MlCE\r\nakVe3iYgRybV7HNVUd9lStwwUHKVJAqE/DbR0IuZUbXs3U9C1/WdXyEKNxiEi4SS\r\nlaolI9ag+nEjgHj9d+v7gryBCs7HY2lHYzZnE3A0f/6AEcawBrKD6kDZukUkkVw3\r\n/HaeIMV3zwyhvQuuIer2SqCjV9ARcahWSsEk9I4WGjsEXRbk2VoA0byokaFWdPEs\r\no+ZHKB08xZK76644sWc44icvH3Zk8YBi6hDiZM/R8xfd+mDDDEoujD5vgjRt6b7F\r\ndv75aVutbaC6IwIEb7l3On2Vs6/N11uJGldRnDtH0QKBgQDpxf5H+QlU3xwh6+Dt\r\nDlmGRUQcjq1i5EVGtTYtSsPaG/AbaSowoRtsWyxCJs8YxVUzEoguP3DsKGgWhD93\r\ncpvtMDyFZxPfX56PQK0SIoksZjVRZHTWRB2/l+7dnPciXCJXDwaoVFU1ThKc0pP5\r\nuMXLXivdgzYsmmynv+ahfbtUOwKBgQDF1Q3NczP8mchlUj1zB/QMEeP4xX+AiFAE\r\n8cBu87+Bl+BIu8bxUyKG/XZ73RFym73DYSTX3oInpOdMuBr1IXgFA8saNHvw/Vps\r\nyzFTMvKFChKQvYY6xh9Mjq/zggIL1LAVFzcK/5dPiqbZP3wKIi7he6vMCJ0IEpGl\r\n18unz4o7OQKBgHHf1IHSuczx8Y5EjIhtGQbi7s7KYYNulqBe3UkqxkSUn1162OZf\r\nVDBwKRsANJloZpw+Rr/gf21KMYnmWdQhq/raKGEDWRbSSTaW1reiwxcxon9HY/KL\r\ns8IEjIK/V1MRdljaJPASRH92zHI/0X0vmIn8EXoR1G3du1frjrjTulDJAoGAFNZv\r\nIL/MrwOntvxlmpMw4oCT6aUr2+b/vrWUFlu4RTcxGZglyU9/aIaUD1Hmv5Kl90lp\r\nLw+x1+knr84IkN9Ym/adUwJKN8UH3EO+y0unfdnkwLglxlUOAOtanySHgKWDcoVC\r\nd/caAffRwTpNn2egVoHHQ7N4jtwd2UEUo3VZ0wkCgYAddnVT3tqCjdSCuD+ewbhw\r\nO2uA7aC43AL1JPzoD6Jj172QxpBVua3Aj8BjsyIAhaA5r6LlScWu6C0focd86ciA\r\nR6LNcGfQgohJB3zc7GeEpfaGXb/Ql/tVidOD/uAuMV9T5Cngn3WlaOJYdqWMAX0q\r\nnQb2zq5ebfnCbVSc3g3A4A==\r\n-----END PRIVATE KEY-----", 
+    "cacert": "\r\nSubject: CN=VSPCA\r\nIssuer: CN=VSPCA\r\n-----BEGIN CERTIFICATE-----\r\nMIIDGDCCAgCgAwIBAgIIK9O63h3JlhEwDQYJKoZIhvcNAQELBQAwEDEOMAwGA1UE\r\nAwwFVlNQQ0EwHhcNMTgwNzA3MTMyMDMyWhcNMjgwNzA0MTMyMDMyWjAQMQ4wDAYD\r\nVQQDDAVWU1BDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAIDsYDc8\r\n9vuwc/peziLkPmdu7RgjitgEvCnSUzXCA2W6fsjzIohc/0Y9mRM59YdjVXvVQvPg\r\ngtgfmUyjTHz/awjm89yLw79/6tgVjZD0kgcGThXbSr8BSlGvGpwy8TcfyIlF5XPP\r\nwtloiNutHZfM854nudz579Q62CiNvd8OMArPPHi8pkUjcenCyiVsBwDMLi2yhcMq\r\neZv/vfksrr4Wr4hUYy34HLYVHJiqxr1FdCqJiQfUnUkI/saLXBG9Eo7HiKgHPny/\r\ntv4YIkcCTD4azf+JjV/nExZ7yTjsTVB7sIe8RALQsvQCWctMOUxtGEiSfnsT6EDZ\r\n6E3ifGJXDGIlffsCAwEAAaN2MHQwDwYDVR0TAQH/BAUwAwEB/zAfBgNVHSMEGDAW\r\ngBS8QnbMwDhpR2IPYt7hRKMtzZtixzARBgNVHSAECjAIMAYGBFUdIAAwHQYDVR0O\r\nBBYEFLxCdszAOGlHYg9i3uFEoy3Nm2LHMA4GA1UdDwEB/wQEAwIBhjANBgkqhkiG\r\n9w0BAQsFAAOCAQEAWn4C0VxSiIqgAyKPE/Jwy1hCqrg+lttWOUbLtGZTW6URN+fd\r\nLfUpsAkCwhiVa4nmJginw14ftLHneNHYPmvghEN8xc6TXFn7LiECa+dBa/HT8mZv\r\nWINP+1swm4/DbdzUL8QUFvB0APgx4Rq37yzaYn+sTw5F+3WSn7Gaeke4whn2QHDc\r\nFD/4Qt+YTlfI3cFbxnN/Xhdqu6HnbUZACrYXV9r/x6ah9T+YkFaweY+WI1K2iK/Q\r\no6zVIfQ7B72bedzzd6kj8rzIs0tm/aLIyWPcSeDrFyu2BZFY2Uo/D37ho3BvvY7c\r\nyv4LldEiPKQDrW53myL+1cpiFAiUoZ081N+rkQ==\r\n-----END CERTIFICATE-----", 
+    "agent-config": {
+        "hash": "", 
+        "sslcert": "/etc/default/bootstrap/keys/cert.pem", 
+        "sslkey": "/etc/default/bootstrap/keys/key.pem", 
+        "configURL": "https://util-1.mvdcdev37.us.alcatel-lucent.com:11443/nuage/api/v5_0/nsgateways/1fcb9841-1d71-434e-9a66-9e64bcbcbd56/infraconfig", 
+        "sslcacert": "/etc/default/bootstrap/keys/cacert.pem", 
+        "data": {
+            "proxyDNSName": "util-1.mvdcdev37.us.alcatel-lucent.com", 
+            "bootstrap": {
+                "status": "INACTIVE", 
+                "id": "5925c2eb-4a3b-427f-8fd9-ecb02b9ad643"
+            }, 
+            "results": {
+                "INET_DEFINITION": {
+                    "result": "PASS", 
+                    "uplink1": {
+                        "message": "SUCCESS - WAN ppp0 IP configured to 10.15.1.254/255.255.255.255", 
+                        "result": "PASS", 
+                        "inet": {
+                            "peer": "10.15.1.2", 
+                            "netmask": "255.255.255.255", 
+                            "addr": "10.15.1.254"
+                        }
+                    }
+                }, 
+                "PROXY_DNS_RESOLUTION": {
+                    "message": "SUCCESS - Proxy 'util-1.mvdcdev37.us.alcatel-lucent.com' resolves to 10.10.16.1", 
+                    "proxyIP": "10.10.16.1", 
+                    "result": "PASS"
+                }
+            }, 
+            "url": "https://proxy-bootstrap:12443/nuage/api/v5_0/nsgateways/1fcb9841-1d71-434e-9a66-9e64bcbcbd56/bootstrapactivations", 
+            "location": {
+                "country": null, 
+                "state": null, 
+                "address": null, 
+                "id": "5fc0e09f-5df5-4e20-af09-340a6caa11e0", 
+                "locality": null
+            }, 
+            "installer": {
+                "lastName": "Bonbeur", 
+                "mobileNumber": "+15102132030", 
+                "email": "jean@bonbeur.net", 
+                "firstName": "Jean", 
+                "id": "1e83ac5f-bbb5-4c14-bb6d-5f7780c3a783"
+            }, 
+            "gateway": {
+                "tpmOwner": "", 
+                "subjectDN": "UID=ovs-1@test_organization,CN=ovs-1,O=test_organization", 
+                "uplinks": [
+                    {
+                        "v4": {
+                            "installermanaged": false, 
+                            "mode": "pppoe", 
+                            "pppoe": {
+                                "user": "mk", 
+                                "pass": "mk"
+                            }
+                        }, 
+                        "name": "eth0"
+                    }
+                ], 
+                "srk": "", 
+                "name": "ovs-1", 
+                "enterpriseID": "4088a805-1623-4ac9-b8dd-dcbe504589c6", 
+                "systemID": "149.82.224.238", 
+                "enterprise": "test_organization", 
+                "personality": "NSG", 
+                "id": "1fcb9841-1d71-434e-9a66-9e64bcbcbd56", 
+                "description": "ovs-1"
+            }
+        }
+    }, 
+    "tpm": {
+        "srk": "4dbc88aa1015483ef9edae56e5d324596c034a4c", 
+        "tpmOwner": "4dbc88aa1015483ef9edae56e5d324596c034a4c"
+    }, 
+    "location": {
+        "timeZoneID": "UTC", 
+        "locality": null, 
+        "country": null, 
+        "longitude": null, 
+        "state": null, 
+        "address": null, 
+        "latitude": null
+    }
+}

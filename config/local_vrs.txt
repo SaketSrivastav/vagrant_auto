@@ -1,0 +1,126 @@
+
+yum -y remove nuage-openvswitch nuage-openvswitch-debuginfo ;   rm -f *kmod* *docker* *dkms* *meta* ; rpm -i *.rpm ; echo "" > /var/log/openvswitch/ovs-vswitchd.log ;  service openvswitch restart ;   ovs-appctl vlog/set any:file:info ; virsh destroy vm1; virsh undefine vm1 ; virsh define /root/nfs/ws/vms/vm1.xml ; virsh start vm1 ;  virsh destroy vm2; virsh undefine vm2 ; virsh define /root/nfs/ws/vms/vm2.xml ; virsh start vm2 
+
+ovs-ofctl add-vrf alubr0 1 24 ; ovs-ofctl add-vrf alubr0 2 25 ;  
+
+ovs-ofctl add-evpn alubr0 1 "evpn_id=11,vni_id=11,flags=vxlan,flags=dhcp_enable,subnet=1.0.0.0,mask=255.0.0.0,gw_ip=1.0.0.1,gw_mac=01:01:01:01:01:01" ;
+ovs-ofctl add-evpn alubr0 1 "evpn_id=22,vni_id=22,flags=vxlan,flags=dhcp_enable,subnet=2.0.0.0,mask=255.0.0.0,gw_ip=2.0.0.1,gw_mac=02:02:02:02:02:02" ; 
+
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=membership,evpn_id=11,interface=001141306072,vm_uuid=9b725235-322c-4c09-ae99-7014a172c6bb"
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=membership,evpn_id=22,interface=001141306073,vm_uuid=a866b1d3-2cda-4c6d-9a01-8a737ed43f90"
+
+ovs-appctl vrf/show alubr0
+
+ovs-ofctl add-flow alubr0 "flow_type=dhcp,interface="001141306072",vm_uuid="9b725235-322c-4c09-ae99-7014a172c6bb",ip=1.1.1.5"
+ovs-ofctl add-flow alubr0 "flow_type=dhcp,interface="001141306073",vm_uuid="a866b1d3-2cda-4c6d-9a01-8a737ed43f90",ip=2.2.2.5"
+
+b41b6ed
+
+
+ovs-ofctl add-evpn alubr0 1 "evpn_id=11,vni_id=11,flags=vxlan,flags=dhcp_pat_enable,flags=dhcp_enable,subnet=1.0.0.0,mask=255.0.0.0,gw_ip=1.0.0.1,gw_mac=01:01:01:01:01:01" ;
+
+
+
+ovs-ofctl add-flow alubr0 "flow_type=acl,priority=0,flags=pre,interface="001141306072",vm_uuid="9b725235-322c-4c09-ae99-7014a172c6bb",action=allow"
+ovs-ofctl add-flow alubr0 "flow_type=acl,priority=0,flags=pre,interface="001141306073",vm_uuid="a866b1d3-2cda-4c6d-9a01-8a737ed43f90",action=allow"
+
+ovs-ofctl add-flow alubr0 "flow_type=acl,priority=0,flags=redirect,interface="001141306072",vm_uuid="9b725235-322c-4c09-ae99-7014a172c6bb",action=allow"
+ovs-ofctl add-flow alubr0 "flow_type=acl,priority=0,flags=redirect,interface="001141306073",vm_uuid="a866b1d3-2cda-4c6d-9a01-8a737ed43f90",action=allow"
+
+ovs-ofctl add-flow alubr0 "flow_type=acl,priority=0,flags=post,interface="001141306072",vm_uuid="9b725235-322c-4c09-ae99-7014a172c6bb",action=allow"
+ovs-ofctl add-flow alubr0 "flow_type=acl,priority=0,flags=post,interface="001141306073",vm_uuid="a866b1d3-2cda-4c6d-9a01-8a737ed43f90",action=allow"
+
+
+
+ovs-ofctl add-flow alubr0 flow_type=route,flags=evpn,vrf_id=0x1,evpn_id=11,interface=001141306072,vm_uuid=9b725235-322c-4c09-ae99-7014a172c6bb,dl_dst=00:11:41:30:60:72
+ovs-ofctl add-flow alubr0 flow_type=route,flags=evpn,vrf_id=0x1,evpn_id=22,interface=001141306073,vm_uuid=a866b1d3-2cda-4c6d-9a01-8a737ed43f90,dl_dst=00:11:41:30:60:73
+
+ovs-ofctl add-flow alubr0 "flow_type=qos,interface="001141306072",type=vm,vm_uuid="9b725235-322c-4c09-ae99-7014a172c6bb",ingress_peak_rate=50000,ingress_burst=5000,egress_class=3"
+ovs-ofctl add-flow alubr0 "flow_type=qos,interface="001141306073",type=vm,vm_uuid="a866b1d3-2cda-4c6d-9a01-8a737ed43f90",ingress_peak_rate=50000,ingress_burst=5000,egress_class=3"
+
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=arp-route,ip,vrf_id=0x1,evpn_id=11,nw_dst=1.1.1.5,dl_dst=00:11:41:30:60:72"
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=arp-route,ip,vrf_id=0x1,evpn_id=22,nw_dst=2.2.2.5,dl_dst=00:11:41:30:60:73"
+
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=evpn,vrf_id=0x1,evpn_id=11,dl_dst=00:11:41:30:60:72,nw_dst=1.1.1.5"
+
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=evpn-redirect,vrf_id=0x1,evpn_id=11,nw_dst=1.1.1.5"
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=evpn-redirect,vrf_id=0x1,evpn_id=22,nw_dst=2.2.2.5"
+
+
+
+
+
+
+
+virsh destroy vm1; virsh undefine vm1 ; virsh define /root/nfs/ws/vms/vm1.xml ; virsh start vm1 ; 
+virsh destroy vm2; virsh undefine vm2 ; virsh define /root/nfs/ws/vms/vm2.xml ; virsh start vm2 
+
+
+
+ovs-appctl ofproto/trace alubr0 "in_port=11,icmp,dl_src=00:11:41:30:60:72,dl_dst=01:01:01:01:01:01,nw_src=1.1.1.5,nw_dst=2.2.2.5,nw_ttl=64,icmp_type=8"
+
+skb_priority(0),in_port(8),eth_type(0x0800),ipv4(src=1.1.1.5/0.0.0.0,dst=2.2.2.5/0.0.0.0,proto=1/0,tos=0/0,ttl=64/0,frag=no/0xff), packets:3, bytes:294, used:0.903s, actions:drop
+
+ovs-appctl ofproto/trace alubr0 "in_port=5,icmp,dl_src=fa:16:3e:2d:80:7d,dl_dst=68:54:ed:00:66:35,nw_src=172.10.0.70,nw_dst=172.20.0.104,nw_ttl=64,icmp_type=8"
+
+
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=spat,vrf_id=0x2,remote_ip=0x1,nw_dst=1.1.1.1"
+
+
+ovs-ofctl add-vrf alubr0 <vrf_id> <tnl_id>
+
+
+
+ovs-ofctl add-vrf alubr0 1 24
+ovs-ofctl add-vrf alubr0 2 25
+
+----------------------------
+bidi nat:
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=spat,vrf_id=0x3,nw_dst=3.3.3.3,n_hop=0|1,nhop_flag=remote,rnhop_flag=nhop_vrf_id,tep_addr=0x1"
+ovs-ofctl add-flow alubr0 "flow_type=exit_domain,n_entries=1,vrf_id=0x1,type=overlay,prefix=3.3.0.0,mask=255.255.0.0"
+
+spat:
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=spat,vrf_id=0x2,remote_ip=0x1,nw_dst=1.1.1.1"
+
+ovs-ofctl del-flows alubr0 "flow_type=route,flags=vrf,is_remote=true,vrf_id=0x2,prefix=1.1.1.1,mask=255.255.255.255"
+ovs-ofctl add-flow alubr0 "flow_type=exit_domain,n_entries=1,vrf_id=0x1,prefix=135.227.0.0,mask=255.255.0.0"
+ovs-ofctl add-flow alubr0 "flow_type=exit_domain,n_entries=1,vrf_id=0x1,type=overlay,prefix=135.227.0.0,mask=255.255.0.0,prefix=22.20.0.0,mask=255.0.0.0"
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=nat,vrf_id=0x6ac80616,nw_dst=50.116.117.95,public_ip=2.2.2.3,pub_vrfid=0x2056ceac"
+
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=spat,vrf_id=0x1,nw_dst=1.1.1.1,n_hop=0|2,nhop_flag=remote,rnhop_flag=nhop_vrf_id,tep_addr=0x3,nhop_flag=remote,rnhop_flag=nhop_vrf_id,tep_addr=0x2"
+
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=spat,vrf_id=0x1,nw_dst=1.1.1.1,n_hop=0|1,nhop_flag=remote,rnhop_flag=nhop_vrf_id,tep_addr=0x3"
+
+----------------------------
+ecmp:
+remote nhop route
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=ecmp,vrf_id=0x1,nw_dst=1.1.1.2,n_hop=0|1,nhop_flag=remote,mvpn_id=2,tep_addr=10.15.1.254"
+ovs-ofctl add-flow alubr0 "flow_type=route,flags=spat,vrf_id=0x1,nw_dst=1.1.1.1,n_hop=0|2,nhop_flag=remote,rnhop_flag=nhop_vrf_id,tep_addr=0x3,nhop_flag=remote,rnhop_flag=nhop_vrf_id,tep_addr=0x3"
+
+----------------------------
+qos: 
+ovs-ofctl add-flow alubr0 "flow_type=qos,interface=<>,vm_uuid=<>,ingress_fip_rate=<>,ingress_fip_peak_rate=<>,ingress_fip_burst=<>"
+ovs-ofctl add-flow alubr0 "flow_type=qos,interface=001103434280,vm_uuid=a842ca79-cca2-49e3-9fa7-ca3b67d4971b,type=vm,ingress_fip_rate=1000,ingress_fip_peak_rate=2000,ingress_fip_burst=30000"
+
+ovs-ofctl add-flow alubr0 "flow_type=qos,interface=001141306072,vm_uuid=9b725235-322c-4c09-ae99-7014a172c6bb,type=vm,egress_fip_rate=0x200,egress_fip_peak_rate=0x200,egrep_burst=0xffffffff,egress_fip_cburst=0xffffffff,ingress_fip_rate=1,ingress_fip_peak_rate=2,ingress_fip_burst=3"
+
+ovs-ofctl add-flow alubr0 "flow_type=qos,interface=001141306072,vm_uuid=9b725235-322c-4c09-ae99-7014a172c6bb,type=vm,egress_fip_rate=0x200,egress_fip_peak_rate=0x200,egrep_burst=0xffffffff,egress_fip_cburst=0xffffffff,ingress_peak_rate=0xffffffff,ingress_burst=0xffffffff,ingress_bum_rate=0xffffffff,ingress_bum_peak_rate=0xffffffff,ingress_bum_burst=0xfff,ingress_fip_rate=0xffffffff,ingress_fip_peak_rate=0xffffffff,ingress_fip_burst=0xffffffff"
+
+----------------------------
+ofproto/trace:
+ovs-appctl ofproto/trace alubr0 "in_port=16,icmp,dl_src=00:11:03:43:42:81,dl_dst=68:54:ed:00:15:1a,nw_src=50.28.83.34,nw_dst=1.1.116.64,nw_ttl=64,icmp_type=8"
+
+----------------------------
+tc cmds:
+
+tc filter add dev <devname> parent ffff: protocol all prio 494161 *              basic police rate <kbits_rate>kbit burst <kbits_burst>k
+             mtu 65535 drop
+ovs-ofctl del-flows alubr0 "flow_type=qos,interface=vm2,vm_uuid=dc209d95-a87c-462c-96c1-450df907eb59,type=vm,egress_fip_rate=100,egress_fip_0"ak_rate=2000,egress_fip_burst=300"
+
+
+
+
+
+
+
+

@@ -1,0 +1,183 @@
+{
+    "vrfs": [
+        {   "id": 1,
+            "tnl_id":10,
+            "static_routes" : [
+                {
+                "ip" :"0.0.0.0/0",
+                "tep_addr" :"100.100.100.100"
+                },
+                {
+                "ip" :"20.20.20.20",
+                "tep_addr" :"100.100.100.100"
+                }
+            ]
+        },
+        {   "id": 2,
+            "tnl_id":20,
+            "static_routes" : [
+            ]
+        },
+        {   "id": 3,
+            "tnl_id":30,
+            "static_routes" : [
+                {
+                "ip" :"5.5.5.5",
+                "tep_addr" :"100.100.100.100"
+                }
+            ]
+        }
+    ],
+    "evpns": [
+        {
+            "vrf" : 1,
+            "properties": {
+                "evpn_id" :11,
+                "vni_id" :11,
+                "flags" : "vxlan,dhcp_enable,evpn-redirect,pat_enable,underlay",
+                "subnet" : "1.0.0.0", "mask" : "255.0.0.0",
+                "gw_ip" :"1.0.0.1",  "gw_mac" : "01:01:01:01:01:01"
+            }
+        },
+        {
+            "vrf" : 1,
+            "properties": {
+                "evpn_id" :12,
+                "vni_id" :12,
+                "flags" : "vxlan,dhcp_enable,dhcp_pool_enable,evpn-redirect,pat_enable,underlay",
+                "subnet" : "2.0.0.0", "mask" : "255.0.0.0",
+                "gw_ip" :"2.0.0.1",  "gw_mac" : "02:02:02:02:02:02"
+            }
+        },
+        {
+            "vrf" : 2,
+            "properties": {
+                "evpn_id" :21,
+                "vni_id" :21,
+                "flags" : "vxlan,dhcp_enable,underlay,evpn-redirect",
+                "subnet" : "3.0.0.0", "mask" : "255.0.0.0",
+                "gw_ip" :"3.0.0.1",  "gw_mac" : "03:03:03:03:03:03"
+            }
+        },
+        {
+            "vrf" : 2,
+            "properties": {
+                "evpn_id" :22,
+                "vni_id" :22,
+                "flags" : "dhcp_pool_enable,vxlan,pat_enable,dhcp_enable,underlay,evpn-redirect",
+                "subnet" : "1.0.0.0", "mask" : "255.0.0.0",
+                "gw_ip" :"1.0.0.1",  "gw_mac" : "04:04:04:04:04:04"
+            }
+        }
+    ],
+    "vms": [
+        {
+            "name": "vm1-veth1",
+            "interface" :"vm1-veth1",
+            "isfake":"True",
+            "vrf": 1,
+            "evpn": 11,
+            "uuid" : "15b34908-ed06-11e6-b62e-0800271e6240",
+            "ipv6" : "2001:db8:0:f101::2",
+
+            "gw_ipv6" :"2001:0db8:0:f101::1",
+            "ip" : "1.1.1.1", "mac" : "2e:22:82:5a:8e:f9",
+            "fip" : "3.3.3.1", "pub_vrf" : 3,
+            "ingress_rate" : 4294967295,"ingress_peak_rate": 4294967295,"ingress_burst":4294967295,
+            "ingress_bum_rate" : 4294967295,"ingress_bum_peak_rate": 4294967295,"ingress_bum_burst":4294967295,
+            "ingress_fip_rate" : 0,"ingress_fip_peak_rate": 0,"ingress_fip_burst":0,
+            "ingress_fip_rate" : 4294967295,"ingress_fip_peak_rate": 4294967295,"ingress_fip_burst":4294967295,
+            "egress_fip_rate" : 0,"egress_fip_peak_rate": 0,"egress_fip_burst":0,
+            "egress_fip_rate" : 6000,"egress_fip_peak_rate": 6000,"egress_fip_burst":100,
+            "egress_class": 3
+        },
+        {
+            "name" :"vm2-veth1",
+            "interface" :"vm2-veth1",
+            "isfake":"True",
+            "vrf": 1,
+            "evpn" : 12,
+            "uuid" : "15dfb402-ed06-11e6-b62e-0800271e6240",
+            "ipv6" : "2001:db8:0:f102::2",
+            "gw_ipv6" :"2001:0db8:0:f102::1",
+            "ip" : "2.2.2.1", "mac" : "0e:21:50:bc:fe:51",
+            "fip" : "4.4.4.1", "pub_vrf" : 3,
+            "ingress_rate" : 4294967295,"ingress_peak_rate": 4294967295,"ingress_burst":4294967295,
+            "ingress_bum_rate" : 4294967295,"ingress_bum_peak_rate": 4294967295,"ingress_bum_burst":4294967295,
+            "ingress_fip_rate" : 0,"ingress_fip_peak_rate": 0,"ingress_fip_burst":0,
+            "ingress_fip_rate" : 4294967295,"ingress_fip_peak_rate": 4294967295,"ingress_fip_burst":4294967295,
+            "egress_fip_rate" : 4000,"egress_fip_peak_rate": 4000,"egress_fip_burst":100,
+            "egress_class": 3
+        },
+        {
+            "name": "vm3-veth1",
+            "interface" :"vm3-veth1",
+            "isfake":"True",
+            "vrf": 1,
+            "evpn": 11,
+            "uuid" : "15e516cc-ed06-11e6-b62e-0800271e6240",
+            "ipv6" : "2001:db8:0:f101::3",
+            "gw_ipv6" :"2001:0db8:0:f101::1",
+            "ip" : "1.1.1.2", "mac" : "72:37:38:6d:92:17",
+            "fip" : "3.3.3.2", "pub_vrf" : 3,
+            "ingress_rate" : 4294967295,"ingress_peak_rate": 4294967295,"ingress_burst":4294967295,
+            "ingress_bum_rate" : 4294967295,"ingress_bum_peak_rate": 4294967295,"ingress_bum_burst":4294967295,
+            "ingress_fip_rate" : 0,"ingress_fip_peak_rate": 0,"ingress_fip_burst":0,
+            "ingress_fip_rate" : 4294967295,"ingress_fip_peak_rate": 4294967295,"ingress_fip_burst":4294967295,
+            "egress_fip_rate" : 0,"egress_fip_peak_rate": 0,"egress_fip_burst":0,
+            "egress_fip_rate" : 6000,"egress_fip_peak_rate": 6000,"egress_fip_burst":100,
+            "egress_class": 3
+        },
+        {
+            "name": "vm4-veth1",
+            "interface" :"vm4-veth1",
+            "isfake":"True",
+            "vrf": 2,
+            "evpn": 22,
+            "uuid" : "15ea590c-ed06-11e6-b62e-0800271e6240",
+            "ipv6" : "2001:db8:0:f102::3",
+            "gw_ipv6" :"2001:0db8:0:f102::1",
+            "ip" : "2.2.2.2", "mac" : "7e:f6:0e:20:69:0c",
+            "fip" : "4.4.4.2", "pub_vrf" : 3,
+            "ingress_rate" : 4294967295,"ingress_peak_rate": 4294967295,"ingress_burst":4294967295,
+            "ingress_bum_rate" : 4294967295,"ingress_bum_peak_rate": 4294967295,"ingress_bum_burst":4294967295,
+            "ingress_fip_rate" : 0,"ingress_fip_peak_rate": 0,"ingress_fip_burst":0,
+            "ingress_fip_rate" : 4294967295,"ingress_fip_peak_rate": 4294967295,"ingress_fip_burst":4294967295,
+            "egress_fip_rate" : 0,"egress_fip_peak_rate": 0,"egress_fip_burst":0,
+            "egress_fip_rate" : 6000,"egress_fip_peak_rate": 6000,"egress_fip_burst":100,
+            "egress_class": 3
+        }
+    ],
+    "bridge_ports": [
+        {
+            "name": "br1-veth1",
+            "interface" :"br1-veth1",
+            "vrf": 2,
+            "evpn": 22,
+            "ip" : "none", "mac" : "nonefa:91:74:8c:3f:b4",
+            "uuid" : "5566b1d3-2cda-4c6d-9a01-8a737ed43f93",
+            "ingress_rate" : 4294967295,"ingress_peak_rate": 4294967295,"ingress_burst":4294967295,
+            "ingress_bum_rate" : 4294967295,"ingress_bum_peak_rate": 4294967295,"ingress_bum_burst":4294967295,
+            "ingress_fip_rate" : 0,"ingress_fip_peak_rate": 0,"ingress_fip_burst":0,
+            "ingress_fip_rate" : 4294967295,"ingress_fip_peak_rate": 4294967295,"ingress_fip_burst":4294967295,
+            "egress_fip_rate" : 0,"egress_fip_peak_rate": 0,"egress_fip_burst":0,
+            "egress_fip_rate" : 6000,"egress_fip_peak_rate": 6000,"egress_fip_burst":100,
+            "egress_class": 3
+        },
+        {
+            "name": "br2-veth1",
+            "interface" :"br2-veth1",
+            "vrf": 2,
+            "evpn": 22,
+            "ip" : "none", "mac" : "nonefa:91:74:8c:3f:b4",
+            "uuid" : "6666b1d3-2cda-4c6d-9a01-8a737ed43f93",
+            "ingress_rate" : 4294967295,"ingress_peak_rate": 4294967295,"ingress_burst":4294967295,
+            "ingress_bum_rate" : 4294967295,"ingress_bum_peak_rate": 4294967295,"ingress_bum_burst":4294967295,
+            "ingress_fip_rate" : 0,"ingress_fip_peak_rate": 0,"ingress_fip_burst":0,
+            "ingress_fip_rate" : 4294967295,"ingress_fip_peak_rate": 4294967295,"ingress_fip_burst":4294967295,
+            "egress_fip_rate" : 0,"egress_fip_peak_rate": 0,"egress_fip_burst":0,
+            "egress_fip_rate" : 6000,"egress_fip_peak_rate": 6000,"egress_fip_burst":100,
+            "egress_class": 3
+        }
+    ]
+}

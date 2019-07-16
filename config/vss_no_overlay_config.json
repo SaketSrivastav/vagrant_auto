@@ -1,0 +1,447 @@
+{
+    "vrfs": [
+        {   "id": 1,
+            "type":"vlan",
+            "static_routes" : [
+                {
+                "ip" :"0.0.0.0/0",
+                "tep_addr" :"100.100.100.100"
+                },
+                {
+                "ip" :"20.20.20.20",
+                "tep_addr" :"100.100.100.100"
+                }
+            ]
+        },
+        {   "id": 2,
+            "type":"vlan",
+            "static_routes" : [
+            ]
+        },
+        {   "id": 3,
+            "type":"vlan",
+            "vrf_flags": [ "underlay" ],
+            "static_routes" : [
+                {
+                "ip" :"5.5.5.5",
+                "tep_addr" :"100.100.100.100"
+                }
+            ]
+        },
+        {   "id": 4,
+            "type":"vlan",
+            "static_routes" : [
+            ]
+        },
+        {   "id": 5,
+            "type":"vlan",
+            "static_routes" : [
+            ]
+        },
+        {   "id": 10,
+            "comments": "specifically for bridge-ports",
+            "static_routes" : [
+            ]
+        }
+    ],
+    "evpns": [
+        {
+            "vrf" : 1,
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :11,
+                "vni_id" :11,
+                "flags" : "l3_proxy,underlay,dhcp_enable",
+                "subnet" : "1.1.1.0", "mask" : "255.255.255.0",
+                "gw_ip" :"1.1.1.254",  "gw_mac" : "01:01:01:01:01:01",
+
+                "subnetv6" : "2001:0:0:11::0",
+                "maskv6" : "ffff:ffff:ffff:ffff:ffff::",
+                "gw_ipv6" :"2001:0:0:11::254"
+            }
+        },
+        {
+            "vrf" : 1,
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :12,
+                "vni_id" :12,
+                "flags" : "l3_proxy,pat_enable,underlay,dhcp_enable,dhcp_pool_enable,evpn-redirect",
+                "subnet" : "2.2.2.0", "mask" : "255.255.255.0",
+                "gw_ip" :"2.2.2.254",  "gw_mac" : "02:02:02:02:02:02",
+
+                "subnetv6" : "2001:0:0:12::0",
+                "maskv6" : "ffff:ffff:ffff:ffff:ffff::",
+                "gw_ipv6" :"2001:0:0:12::254"
+            }
+        },
+        {
+            "vrf" : 2,
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :21,
+                "vni_id" :21,
+                "flags" : "l3_proxy,pat_enable,dhcp_enable,evpn-redirect",
+                "subnet" : "10.1.1.0", "mask" : "255.255.255.0",
+                "gw_ip" :"10.1.1.254",  "gw_mac" : "03:03:03:03:03:03",
+
+                "subnetv6" : "2001:0:0:21::0",
+                "maskv6" : "ffff:ffff:ffff:ffff:ffff::",
+                "gw_ipv6" :"2001:0:0:21::254"
+            }
+        },
+        {
+            "vrf" : 2,
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :22,
+                "vni_id" :22,
+                "flags" : "l3_proxy,pat_enable,dhcp_pool_enable,dhcp_enable,evpn-redirect",
+                "subnet" : "20.1.1.0", "mask" : "255.255.255.0",
+                "gw_ip" :"20.1.1.254",  "gw_mac" : "04:04:04:04:04:04",
+
+                "subnetv6" : "2001:0:0:22::0",
+                "maskv6" : "ffff:ffff:ffff:ffff:ffff::",
+                "gw_ipv6" :"2001:0:0:22::254"
+            }
+        },
+        {
+            "vrf" : 4,
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :41,
+                "vni_id" :41,
+                "flags" : "l3_proxy,pat_enable,underlay,dhcp_enable",
+                "subnet" : "1.1.1.0", "mask" : "255.255.255.0",
+                "gw_ip" :"1.1.1.254",  "gw_mac" : "01:01:01:01:01:01",
+
+                "subnetv6" : "2001:0:0:41::0",
+                "maskv6" : "ffff:ffff:ffff:ffff:ffff::",
+                "gw_ipv6" :"2001:0:0:41::254"
+            }
+        },
+        {
+            "vrf" : 4,
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :42,
+                "vni_id" :42,
+                "flags" : "l3_proxy,dhcp_enable,dhcp_pool_enable,evpn-redirect,pat_enable,underlay",
+                "subnet" : "2.2.2.0", "mask" : "255.255.255.0",
+                "gw_ip" :"2.2.2.254",  "gw_mac" : "02:02:02:02:02:02",
+
+                "subnetv6" : "2001:0:0:42::0",
+                "maskv6" : "ffff:ffff:ffff:ffff:ffff::",
+                "gw_ipv6" :"2001:0:0:42::254"
+            }
+        },
+        {
+            "vrf" : 5,
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :51,
+                "vni_id" :51,
+                "flags" : "l3_proxy,dhcp_enable,evpn-redirect,pat_enable,underlay",
+                "subnet" : "10.1.2.0", "mask" : "255.255.255.0",
+                "gw_ip" :"10.1.2.254",  "gw_mac" : "03:03:03:03:03:03",
+
+                "subnetv6" : "2001:0:0:51::0",
+                "maskv6" : "ffff:ffff:ffff:ffff:ffff::",
+                "gw_ipv6" :"2001:0:0:51::254"
+            }
+        },
+        {
+            "vrf" : 5,
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :52,
+                "vni_id" :52,
+                "flags" : "l3_proxy,dhcp_pool_enable,dhcp_enable,evpn-redirect,pat_enable,underlay",
+                "subnet" : "20.1.2.0", "mask" : "255.255.255.0",
+                "gw_ip" :"20.1.2.254",  "gw_mac" : "04:04:04:04:04:04",
+
+                "subnetv6" : "2001:0:0:52::0",
+                "maskv6" : "ffff:ffff:ffff:ffff:ffff::",
+                "gw_ipv6" :"2001:0:0:52::254"
+            }
+        },
+        {
+            "vrf" : 10,
+            "skip_auto": "True",
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :101,
+                "vni_id" :101,
+                "flags" : "l3_proxy,pat_enable,underlay,arp-proxy,dhcp_pool_enable,vxlan,dhcp_enable",
+                "subnet" : "20.0.0.0", "mask" : "255.255.255.0",
+                "gw_ip" :"20.0.0.254",  "gw_mac" : "04:04:04:04:04:04",
+                "dhcp_pool_range" : "20.0.0.10-20.0.0.15"
+            }
+        },
+        {
+            "vrf" : 10,
+            "skip_auto" : "True",
+            "exclude": [  ],
+            "properties": {
+                "evpn_id" :102,
+                "vni_id" :102,
+                "flags" : "l3_proxy,pat_enable,underlay,arp-proxy,dhcp_pool_enable,vxlan,dhcp_enable",
+                "subnet" : "10.0.0.0", "mask" : "255.255.255.0",
+                "gw_ip" :"10.0.0.254",  "gw_mac" : "05:05:05:05:05:05",
+                "dhcp_pool_range" : "10.0.0.10-10.0.0.15"
+            }
+        }
+    ],
+    "vms": [
+        {
+            "name": "template",
+            "interface" :"template",
+            "isfake":"True",
+            "evpn": 11,
+            "pub_vrf" : 3,
+            "ingress_rate" : 4294967295,"ingress_peak_rate": 4294967295,"ingress_burst":4294967295,
+            "ingress_bum_rate" : 4294967295,"ingress_bum_peak_rate": 4294967295,"ingress_bum_burst":4294967295,
+            "ingress_fip_rate" : 0,"ingress_fip_peak_rate": 0,"ingress_fip_burst":0,
+            "ingress_fip_rate" : 4294967295,"ingress_fip_peak_rate": 4294967295,"ingress_fip_burst":4294967295,
+            "egress_fip_rate" : 0,"egress_fip_peak_rate": 0,"egress_fip_burst":0,
+            "egress_fip_rate" : 6000,"egress_fip_peak_rate": 6000,"egress_fip_burst":100,
+            "egress_class": 3
+        },
+        {
+            "name": "vm1-veth1",
+            "interface" :"vm1-veth1",
+            "evpn": 11,
+            "ipv6" : "2001:0:0:11::11",
+            "ip" : "1.1.1.1",
+            "fip" : "10.10.10.10", "pub_vrf" : 3
+        },
+        {
+            "name" :"vm2-veth1",
+            "interface" :"vm2-veth1",
+            "evpn": 21,
+            "ipv6" : "2001:0:0:21::2",
+            "ip" : "10.1.1.10",
+            "fip" : "4.4.4.1", "pub_vrf" : 3
+        },
+        {
+            "name": "vm3-veth1",
+            "interface" :"vm3-veth1",
+            "vrf": 1,
+            "evpn": 12,
+            "ipv6" : "2001:0:0:12::3",
+            "ip" : "2.2.2.2",
+            "fip" : "3.3.3.2", "pub_vrf" : 3
+        },
+        {
+            "name": "vm4-veth1",
+            "interface" :"vm4-veth1",
+            "vrf": 2,
+            "evpn": 22,
+            "ipv6" : "2001:0:0:22::4",
+            "ip" : "20.1.1.10",
+            "fip" : "10.10.10.11", "pub_vrf" : 3
+        },
+        {
+            "name": "vm5-veth1",
+            "interface" :"vm5-veth1",
+            "evpn": 41,
+            "ipv6" : "2001:0:0:41::5",
+            "ip" : "1.1.1.2",
+            "fip" : "10.10.10.12", "pub_vrf" : 3
+        },
+        {
+            "name" :"vm6-veth1",
+            "interface" :"vm6-veth1",
+            "evpn": 51,
+            "ipv6" : "2001:0:0:51::6",
+            "ip" : "10.1.2.10",
+            "fip" : "10.10.10.13", "pub_vrf" : 3
+        },
+        {
+            "name": "vm7-veth1",
+            "interface" :"vm7-veth1",
+            "evpn": 42,
+            "ipv6" : "2001:0:0:42::7",
+            "ip" : "2.2.2.3",
+            "fip" : "10.10.10.14", "pub_vrf" : 3
+        },
+        {
+            "name": "vm8-veth1",
+            "interface" :"vm8-veth1",
+            "evpn": 52,
+            "ipv6" : "2001:0:0:52::8",
+            "ip" : "20.1.2.10",
+            "fip" : "10.10.10.15", "pub_vrf" : 3
+        },
+        {
+            "name": "vm9-veth1",
+            "interface" :"vm9-veth1",
+            "evpn": 11,
+            "ipv6" : "2001:0:0:11::12",
+            "ip" : "1.1.1.2",
+            "fip" : "10.10.10.11", "pub_vrf" : 3
+        },
+        {
+            "name" :"vm10-veth1",
+            "interface" :"vm10-veth1",
+            "evpn": 21,
+            "ipv6" : "2001:0:0:21::3",
+            "ip" : "10.1.1.11",
+            "fip" : "4.4.4.1", "pub_vrf" : 3
+        },
+        {
+            "name": "vm11-veth1",
+            "interface" :"vm11-veth1",
+            "vrf": 1,
+            "evpn": 12,
+            "ipv6" : "2001:0:0:12::4",
+            "ip" : "2.2.2.3",
+            "fip" : "3.3.3.3", "pub_vrf" : 3
+        },
+        {
+            "name": "vm12-veth1",
+            "interface" :"vm12-veth1",
+            "vrf": 2,
+            "evpn": 22,
+            "ipv6" : "2001:0:0:22::5",
+            "ip" : "20.1.1.11",
+            "fip" : "10.10.10.12", "pub_vrf" : 3
+        },
+        {
+            "name": "vm13-veth1",
+            "interface" :"vm13-veth1",
+            "evpn": 41,
+            "ipv6" : "2001:0:0:41::6",
+            "ip" : "1.1.1.3",
+            "fip" : "10.10.10.13", "pub_vrf" : 3
+        },
+        {
+            "name" :"vm14-veth1",
+            "interface" :"vm14-veth1",
+            "evpn": 51,
+            "ipv6" : "2001:0:0:51::7",
+            "ip" : "10.1.2.11",
+            "fip" : "10.10.10.14", "pub_vrf" : 3
+        },
+        {
+            "name": "vm15-veth1",
+            "interface" :"vm15-veth1",
+            "evpn": 42,
+            "ipv6" : "2001:0:0:42::8",
+            "ip" : "2.2.2.4",
+            "fip" : "10.10.10.15", "pub_vrf" : 3
+        },
+        {
+            "name": "vm16-veth1",
+            "interface" :"vm16-veth1",
+            "evpn": 52,
+            "ipv6" : "2001:0:0:52::9",
+            "ip" : "20.1.2.11",
+            "fip" : "10.10.10.16", "pub_vrf" : 3
+        }
+
+    ],
+    "bridge_ports": [
+        {
+            "name": "br1-veth1",
+            "interface" :"br1-veth1",
+            "evpn": 101,
+            "ip" : "none"
+        },
+        {
+            "name": "br2-veth1",
+            "interface" :"br2-veth1",
+            "evpn": 102,
+            "ip" : "none",
+            "vports" : {
+            }
+        },
+        {
+            "name": "br3-veth1",
+            "interface" :"br3-veth1",
+            "evpn": 101,
+            "ip" : "none",
+            "vports" : {
+            }
+        },
+        {
+            "name": "br4-veth1",
+            "interface" :"br4-veth1",
+            "evpn": 102,
+            "ip" : "none",
+            "vports" : {
+            }
+        }
+    ],
+    "tests": {
+            "bidi-nat": {
+                "basic": {
+                    "links": [
+                    {
+                        "name": "link1(1=>2)",
+                        "c_domain" : 2,
+                        "p_domain" : 1,
+                        "c_spat_ip_from_p" : "50.50.50.50",
+                        "p_spat_cfg" : {
+                            "200.1.1.200" : [ "vm1" ]
+                        },
+                        "p_maps" : [
+                                ["vm3", "200.1.1.10"]
+                            ],
+                        "c_maps" : [
+                                ["vm2", "100.1.1.10"],
+                                ["vm4", "100.1.1.20"]
+                            ],
+                        "c_exit_domain" : [ "vm1" ]
+                    }
+                    ]
+                },
+                "all": {
+                    "links": [
+                    {
+                        "name": "link1(1=>2)",
+                        "c_domain" : 2,
+                        "p_domain" : 1,
+                        "c_spat_ip_from_p" : "50.50.50.50",
+                        "p_spat_cfg" : {
+                            "200.1.1.200" : [ "vm1" ]
+                        },
+                        "p_maps" :
+                            [
+                                ["vm3", "200.1.1.10"]
+                            ],
+                        "c_maps" :
+                            [
+                                ["vm2", "100.1.1.10"],
+                                ["vm4", "100.1.1.20"]
+                            ],
+                        "c_exit_domain" : ["vm1"]
+                    },
+                    {
+                        "name": "link2(1=>5)",
+                        "c_domain" : 5,
+                        "p_domain" : 1,
+                        "c_spat_ip_from_p" : "50.50.50.51",
+                        "p_spat_cfg" : {
+                            "201.1.1.200" : [ "vm1" ]
+                        },
+                        "p_maps" : [
+                            ["vm3", "200.1.1.10"]
+                            ],
+                        "c_maps" :
+                            [
+                                ["vm6", "101.1.1.10"],
+                                ["vm8", "101.1.1.20"]
+                            ],
+                        "c_exit_domain" : ["vm1" ]
+                    }
+
+                    ]
+                }
+            },
+            "dhcp-decline": {
+                "basic": {
+                }
+            }
+        }
+}
